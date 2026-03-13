@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+:root {
+  /* Colores principales del logo */
+  --color-primary: #1E3A5F;        /* Azul oscuro - principal */
+  --color-secondary: #4A7C59;      /* Verde - secundario */
+  --color-tertiary: #D9773F;       /* Naranja - terciario */
+  --color-background: #FFFFFF;      /* Blanco */
+  --color-text-primary: #1E3A5F;   /* Azul oscuro para texto */
+  --color-text-secondary: #5A6C7D; /* Gris azulado */
+  --color-footer: #1E3A5F;         /* Azul oscuro */
+  --color-sky: #87CEEB;            /* Azul cielo (decorativo) */
+  --color-whatsapp: #25D366;       /* Verde WhatsApp */
+  
+  /* Variaciones del azul */
+  --color-primary-light: #2E4A6F;
+  --color-primary-lighter: #3D5A7F;
+  
+  /* Variaciones del verde */
+  --color-secondary-light: #6B8E5A;
+  --color-secondary-dark: #3D5F47;
+  
+  /* Variaciones del naranja */
+  --color-tertiary-light: #E89A6B;
+  --color-tertiary-dark: #C46A2E;
+  
+  /* Grises azulados */
+  --color-gray-light: #F0F3F6;
+  --color-gray-medium: #8A9BA8;
+  --color-gray-border: #E0E5E9;
+  
+  /* Estados */
+  --color-hover-primary: #2E4A6F;
+  --color-hover-secondary: #3D5F47;
+  --color-hover-tertiary: #C46A2E;
+}
+
+@theme inline {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-text-primary);
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+  
+  /* Colores de Tailwind */
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-tertiary: var(--color-tertiary);
+  --color-whatsapp: var(--color-whatsapp);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Animación de fade para el loader */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.loader-fade-out {
+  animation: fadeOut 0.5s ease-out forwards;
+}

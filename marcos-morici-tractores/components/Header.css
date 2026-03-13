@@ -1,0 +1,215 @@
+/* Estado inicial: home en blanco, navbar oculto */
+header.header-hidden {
+  display: none;
+}
+
+header.header-hidden .header-link {
+  opacity: 0;
+  transform: translateX(-120px);
+}
+
+/* Estado final: navbar estable y visible */
+header.header-visible .navbar-blue-bar {
+  opacity: 1;
+  transform: none;
+}
+
+header.header-visible .navbar-blue-bar,
+header.header-visible .navbar-white {
+  opacity: 1;
+  transform: none;
+}
+
+header.header-visible .header-logo-animate {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  animation: none;
+}
+
+header.header-visible .header-links-container,
+header.header-visible .header-link {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+/* En desktop, el logo va a la izquierda con margen del 9% */
+@media (min-width: 768px) {
+  header.header-visible .header-logo-animate {
+    left: 9%;
+    transform: translate(0, -50%);
+  }
+}
+
+/* --- Animaciones (solo cuando header-animating) --- */
+@keyframes navbarAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes logoDropCenter {
+  from {
+    transform: translate(-50%, calc(-50% - 90px));
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes logoMoveLeftSmooth {
+  from {
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  65% {
+    left: 9%;
+    transform: translate(-2%, -50%);
+  }
+  82% {
+    left: 9%;
+    transform: translate(0.6%, -50%);
+  }
+  to {
+    left: 9%;
+    transform: translate(0, -50%);
+  }
+}
+
+/* En mobile, el logo se queda centrado */
+@keyframes logoMoveLeftSmoothMobile {
+  from {
+    left: 50%;
+    transform: translate(-50%, calc(-50% - 90px));
+  }
+  to {
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Animación del container blanco: viene desde abajo del navbar azul */
+@keyframes navWhiteAppear {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación de los links: aparecen de izquierda a derecha */
+@keyframes linkSlideInFromLeft {
+  from {
+    transform: translateX(-150px);
+    opacity: 0;
+  }
+  60% {
+    opacity: 0.7;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Barra azul primero */
+header.header-animating .navbar-blue-bar {
+  opacity: 0;
+  animation: navbarAppear 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Logo cae centrado y luego se va a la izquierda (desktop) o se queda centrado (mobile) */
+header.header-animating .header-logo-animate {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, calc(-50% - 90px));
+  opacity: 0;
+  z-index: 10;
+  animation:
+    logoDropCenter 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards,
+    logoMoveLeftSmoothMobile 1.45s ease-out 1.35s forwards;
+  will-change: transform, left, opacity;
+}
+
+/* Barra blanca aparece después de que termine completamente el logo - viene desde abajo */
+header.header-animating .navbar-white {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: navWhiteAppear 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 3s;
+  will-change: opacity, transform;
+}
+
+/* Links aparecen de izquierda a derecha después de que aparece la barra blanca */
+header.header-animating .header-links-container {
+  opacity: 1;
+}
+
+header.header-animating .header-link {
+  opacity: 0;
+  transform: translateX(-150px);
+  animation: linkSlideInFromLeft 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: transform, opacity;
+}
+
+header.header-animating .header-link[data-delay="0"] {
+  animation-delay: 4.1s;
+}
+
+header.header-animating .header-link[data-delay="1"] {
+  animation-delay: 4.4s;
+}
+
+header.header-animating .header-link[data-delay="2"] {
+  animation-delay: 4.7s;
+}
+
+/* Buscador aparece después de los links (último link termina ~5.6s) */
+@keyframes searchSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+header.header-animating .header-search-wrap {
+  opacity: 0;
+  transform: translateX(40px);
+  animation: searchSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 5.8s;
+  will-change: opacity, transform;
+}
+
+header.header-visible .header-search-wrap {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+/* En desktop, el logo se mueve a la izquierda */
+@media (min-width: 768px) {
+  header.header-animating .header-logo-animate {
+    animation:
+      logoDropCenter 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards,
+      logoMoveLeftSmooth 1.45s ease-out 1.35s forwards;
+  }
+}
