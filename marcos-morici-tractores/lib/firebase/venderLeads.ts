@@ -1,6 +1,7 @@
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase/config';
+import { FirebaseError } from 'firebase/app';
+import { db, storage, isFirestoreConfigured } from '@/lib/firebase/config';
 import type { VenderFormState } from '@/lib/types/venderLead';
 import { VENDER_LEADS_COLLECTION } from '@/lib/vender/constants';
 import { getMachineFieldVisibility } from '@/lib/vender/fieldVisibility';
@@ -10,27 +11,64 @@ export interface PersistLeadResult {
   leadId?: string;
   error?: string;
   filesUploaded: boolean;
+  /** Adjuntos no subidos a Storage (ej. reglas o red); el lead igual puede haberse guardado. */
+  storageWarning?: string;
 }
 
-async function uploadOptionalFiles(clientFolder: string, state: VenderFormState): Promise<string[]> {
-  if (!storage) return [];
-  const urls: string[] = [];
+function randomClientFolder(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+}
+
+function formatFirebaseError(e: unknown, fallback: string): string {
+  if (e instanceof FirebaseError) {
+    if (e.code === 'permission-denied') {
+      return `${fallback} (permission-denied). Revisá reglas de Firestore o Storage en Firebase Console, o desplegá las del repo.`;
+    }
+    return `${e.message} (${e.code})`;
+  }
+  if (e instanceof Error) return e.message;
+  return fallback;
+}
+
+async function uploadVenderFiles(
+  clientFolder: string,
+  state: VenderFormState
+): Promise<{ folletoUrl: string | null; imagenesUrls: string[]; error?: string }> {
+  if (!storage) {
+    return { folletoUrl: null, imagenesUrls: [], error: 'Storage no está configurado (NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET).' };
+  }
+
   const base = `vender_leads/${clientFolder}`;
+  let folletoUrl: string | null = null;
+  const imagenesUrls: string[] = [];
 
-  if (state.folleto) {
-    const r = ref(storage, `${base}/folleto_${Date.now()}_${state.folleto.name}`);
-    await uploadBytes(r, state.folleto);
-    urls.push(await getDownloadURL(r));
+  try {
+    if (state.folleto) {
+      const safeName = state.folleto.name.replace(/[^\w.\-]+/g, '_');
+      const r = ref(storage, `${base}/folleto_${Date.now()}_${safeName}`);
+      await uploadBytes(r, state.folleto, { contentType: state.folleto.type || undefined });
+      folletoUrl = await getDownloadURL(r);
+    }
+
+    for (let i = 0; i < state.imagenes.length; i++) {
+      const file = state.imagenes[i];
+      const safeName = file.name.replace(/[^\w.\-]+/g, '_');
+      const r = ref(storage, `${base}/img_${Date.now()}_${i}_${safeName}`);
+      await uploadBytes(r, file, { contentType: file.type || undefined });
+      imagenesUrls.push(await getDownloadURL(r));
+    }
+  } catch (e) {
+    return {
+      folletoUrl,
+      imagenesUrls,
+      error: formatFirebaseError(e, 'No se pudieron subir los archivos'),
+    };
   }
 
-  for (let i = 0; i < state.imagenes.length; i++) {
-    const file = state.imagenes[i];
-    const r = ref(storage, `${base}/img_${Date.now()}_${i}_${file.name}`);
-    await uploadBytes(r, file);
-    urls.push(await getDownloadURL(r));
-  }
-
-  return urls;
+  return { folletoUrl, imagenesUrls };
 }
 
 function parseNum(raw: string): number | undefined {
@@ -41,12 +79,16 @@ function parseNum(raw: string): number | undefined {
 }
 
 /**
- * Guarda el lead en Firestore y, si hay Storage configurado, intenta subir adjuntos.
- * Requiere reglas que permitan escritura en `venderLeads` y en `vender_leads/{id}/**` según tu proyecto.
+ * Guarda el lead en Firestore (`venderLeads`) y sube adjuntos a Storage bajo `vender_leads/{clientFolder}/`.
  */
 export async function persistVenderLead(state: VenderFormState): Promise<PersistLeadResult> {
-  if (!db) {
-    return { ok: false, error: 'Firebase no está configurado.', filesUploaded: false };
+  if (!isFirestoreConfigured() || !db) {
+    return {
+      ok: false,
+      error:
+        'Firebase no está conectado: completá `.env.local` con las claves web (incluido NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET si subís fotos). Reiniciá el servidor de desarrollo tras guardar.',
+      filesUploaded: false,
+    };
   }
 
   const vis = getMachineFieldVisibility({
@@ -54,18 +96,28 @@ export async function persistVenderLead(state: VenderFormState): Promise<Persist
     condicion: state.condicion,
   });
 
-  const clientFolder = crypto.randomUUID();
-  let fileUrls: string[] = [];
+  const clientFolder = randomClientFolder();
+  let folletoUrl: string | null = null;
+  let imagenesUrls: string[] = [];
+  let storageWarning: string | undefined;
   let filesUploaded = false;
 
-  if (storage && (state.folleto || state.imagenes.length > 0)) {
-    try {
-      fileUrls = await uploadOptionalFiles(clientFolder, state);
-      filesUploaded = fileUrls.length > 0;
-    } catch {
-      /* continúa sin URLs: el mensaje por WhatsApp puede llevar las fotos */
+  const wantsFiles = Boolean(state.folleto || state.imagenes.length > 0);
+
+  if (wantsFiles) {
+    const up = await uploadVenderFiles(clientFolder, state);
+    folletoUrl = up.folletoUrl;
+    imagenesUrls = up.imagenesUrls;
+    if (up.error) {
+      storageWarning = up.error;
     }
+    filesUploaded = Boolean(folletoUrl || imagenesUrls.length > 0);
   }
+
+  const adjuntosUrls = [
+    ...(folletoUrl ? [folletoUrl] : []),
+    ...imagenesUrls,
+  ];
 
   const docPayload = {
     source: 'web-vender',
@@ -88,14 +140,30 @@ export async function persistVenderLead(state: VenderFormState): Promise<Persist
     celular: state.celular.trim(),
     ubicacion: state.ubicacion.trim(),
     mensajeAdicional: state.mensajeAdicional.trim() || null,
-    adjuntosUrls: fileUrls.length ? fileUrls : null,
+    folletoUrl,
+    imagenesUrls,
+    adjuntosUrls: adjuntosUrls.length ? adjuntosUrls : null,
   };
 
   try {
     const refDoc = await addDoc(collection(db, VENDER_LEADS_COLLECTION), docPayload);
-    return { ok: true, leadId: refDoc.id, filesUploaded };
+    let finalStorageWarning = storageWarning;
+    if (wantsFiles && !filesUploaded && !finalStorageWarning) {
+      finalStorageWarning =
+        'No se pudieron subir los archivos. Revisá reglas de Storage y NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET en .env.local.';
+    }
+    return {
+      ok: true,
+      leadId: refDoc.id,
+      filesUploaded,
+      storageWarning: finalStorageWarning,
+    };
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Error al guardar.';
-    return { ok: false, error: msg, filesUploaded };
+    return {
+      ok: false,
+      error: formatFirebaseError(e, 'No se pudo guardar la consulta en Firestore'),
+      filesUploaded,
+      storageWarning,
+    };
   }
 }

@@ -1,0 +1,90 @@
+rules_version = '2';
+
+// Reglas mínimas para que /comprar lea `equipos` y los formularios de ficha escriban `equipoContactos`.
+// Después de editar: `firebase deploy --only firestore:rules` (con Firebase CLI y proyecto enlazado).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /equipos/{id} {
+      // Coincide con el front: documentos sin `publicado` se tratan como publicados.
+      allow read: if !resource.data.keys().hasAny(['publicado']) || resource.data.publicado != false;
+      allow write: if false;
+    }
+
+    match /equipoContactos/{id} {
+      allow create: if request.resource.data.keys().hasAll(['tipo', 'equipoId', 'slug', 'createdAt'])
+        && request.resource.data.tipo is string
+        && request.resource.data.equipoId is string
+        && request.resource.data.slug is string;
+      allow read, update, delete: if false;
+    }
+
+    match /venderLeads/{id} {
+      allow create: if request.resource.data.source == 'web-vender'
+        && request.resource.data.keys().hasAll([
+          'source',
+          'clientFolder',
+          'createdAt',
+          'tipoMaquinaria',
+          'condicion',
+          'marca',
+          'modelo',
+          'precio',
+          'moneda',
+          'nombreApellido',
+          'email',
+          'celular',
+          'ubicacion'
+        ])
+        && request.resource.data.marca is string
+        && request.resource.data.modelo is string
+        && request.resource.data.precio is string
+        && request.resource.data.nombreApellido is string
+        && request.resource.data.email is string
+        && request.resource.data.celular is string
+        && request.resource.data.ubicacion is string
+        && request.resource.data.clientFolder is string
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.tipoMaquinaria in [
+          'retroexcavadoras',
+          'compactacion',
+          'motoniveladoras',
+          'cargadoras',
+          'minicargadoras',
+          'topadoras',
+          'miniexcavadoras',
+          'otros'
+        ]
+        && request.resource.data.condicion in ['nuevo', 'usado']
+        && request.resource.data.moneda in ['pesos', 'dolar']
+        && request.resource.data.marca.size() <= 200
+        && request.resource.data.modelo.size() <= 200
+        && request.resource.data.email.size() <= 320
+        && request.resource.data.celular.size() <= 40
+        && request.resource.data.ubicacion.size() <= 300;
+      allow read, update, delete: if false;
+    }
+
+    // Perfil de cuenta (`lib/firebase/userProfile.ts`). El usuario solo toca su documento; no puede cambiar `role`.
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly([
+          'email',
+          'displayName',
+          'photoURL',
+          'role',
+          'createdAt',
+          'updatedAt'
+        ])
+        && request.resource.data.role == 'user'
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.updatedAt is timestamp
+        && (request.resource.data.email is string || request.resource.data.email == null)
+        && (request.resource.data.displayName is string || request.resource.data.displayName == null)
+        && (request.resource.data.photoURL is string || request.resource.data.photoURL == null);
+      allow update: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.role == resource.data.role;
+      allow delete: if false;
+    }
+  }
+}

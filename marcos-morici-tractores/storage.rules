@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// Adjuntos del formulario Vender → prefijo `vender_leads/{uuid}/` (coincide con `lib/firebase/venderLeads.ts`).
+// Desplegar: `firebase deploy --only storage`
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /vender_leads/{folder}/{fileName} {
+      allow read: if true;
+      allow write: if request.resource != null
+        && request.resource.size < 20 * 1024 * 1024
+        && (
+          request.resource.contentType.matches('image/.*')
+          || request.resource.contentType == 'application/pdf'
+          || request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.*')
+          || request.resource.contentType.matches('application/vnd.ms-.*')
+          || request.resource.contentType == 'application/msword'
+          || request.resource.contentType == 'text/plain'
+          || request.resource.contentType == 'application/octet-stream'
+        );
+    }
+  }
+}

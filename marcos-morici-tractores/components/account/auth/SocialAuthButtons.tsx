@@ -3,7 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { getClientAuth } from '@/lib/firebase/config';
+import { formatAuthError } from '@/lib/firebase/authFormatError';
+import { getClientAuth, isFirebaseWebAppReady } from '@/lib/firebase/config';
 
 const btnGoogle =
   'w-full flex items-center justify-center gap-2 rounded-lg border-2 border-[#E0E5E9] bg-white py-2.5 text-sm font-semibold text-[#1E3A5F] hover:bg-[#F0F3F6] transition-colors';
@@ -21,9 +22,13 @@ export default function SocialAuthButtons({ redirectTo }: Props) {
 
   const signInGoogle = async () => {
     setError(null);
+    if (!isFirebaseWebAppReady()) {
+      setError('Firebase no está configurado (.env.local).');
+      return;
+    }
     const auth = getClientAuth();
     if (!auth) {
-      setError('Firebase no está configurado.');
+      setError('No se pudo abrir el inicio con Google. Recargá la página.');
       return;
     }
     setPending(true);
@@ -33,7 +38,7 @@ export default function SocialAuthButtons({ redirectTo }: Props) {
       router.replace(redirectTo);
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error con Google.');
+      setError(formatAuthError(e, 'Error con Google.'));
     } finally {
       setPending(false);
     }

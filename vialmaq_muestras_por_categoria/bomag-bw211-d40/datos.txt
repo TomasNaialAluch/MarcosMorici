@@ -1,0 +1,24 @@
+Categoría (barra Comprar): Compactación
+URL categoría: https://www.vialmaq.com.ar/quiero-comprar/equipos-de-compactacion
+
+Nombre: BOMAG BW211 D40
+URL producto: https://vialmaq.com.ar/bomag-bw211-d40
+SKU: Com0002
+Precio (meta): 85000 USD
+
+Descripción (resumen):
+La BOMAG BW 211 D-40 es una compactadora de un solo tambor ideal para trabajos de compactación en suelos granulares y cohesivos, con un peso operativo de 11.000 kg y una fuerza centrífuga de hasta 240 kN. Equipada con un motor Deutz de 134 HP y tracción en las ruedas traseras y en el rolo delantero.
+Es rolo liso con cáscara pata de cabra.
+Origen: Alemania
+VER FOLLETO CON CARACTERÍSTICAS TÉCNICAS
+
+Características (tabla):
+  - Marca: Bomag
+  - Modelo: BW211 D40
+  - Condición: Usado
+  - Año de fabricación: 2018
+  - Horas de uso: 1900
+  - Peso total (Kg): 11000
+
+Imagen principal (og:image): https://vialmaq.com.ar/media/catalog/product/cache/93008ecae4fdb64aa4b5ab631bf5d57c/i/m/img-20250606-wa0070.jpg
+PDF adjunto: https://vialmaq.com.ar/media/catalog/product/attachment/b/w/bw211_d40_pata_de_cabra_compressed.pdf

@@ -1,0 +1,25 @@
+Categoría (barra Comprar): Excavadoras
+URL categoría: https://www.vialmaq.com.ar/quiero-comprar/retroexcavadoras
+
+Nombre: CATERPILLAR 313GC
+URL producto: https://vialmaq.com.ar/caterpillar-313gc
+SKU: V103
+Precio (meta): 115000 USD
+
+Descripción (resumen):
+La excavadora Caterpillar 313 GC es una excavadora hidráulica de orugas de tamaño pequeño a mediano, diseñada para ofrecer una combinación de potencia, eficiencia y versatilidad en diversas aplicaciones de construcción. Posee un motor Cat C3.6 con una potencia neta de 100 HP y una velocidad de giro de 11,5 rpm
+Incluye 3era vía hidráulica para la colocación de implementos.
+Incluye acople rápido para facilitar y optimizar el tiempo de trabajo.
+ 
+VER CARACTERÍSTICAS TÉCNICAS EN EL FOLLETO
+
+Características (tabla):
+  - Marca: Carterpillar
+  - Modelo: 313 GC
+  - Año de fabricación: 2025
+  - Horas de uso: 200
+  - Peso total (Kg): 13000
+  - Capacidad de balde (m3): 0,6
+
+Imagen principal (og:image): https://vialmaq.com.ar/media/catalog/product/cache/93008ecae4fdb64aa4b5ab631bf5d57c/i/m/imagen_de_whatsapp_2025-06-11_a_las_15.49.43_3d57a13a.jpg
+PDF adjunto: https://vialmaq.com.ar/media/catalog/product/attachment/c/m/cm20220127-b38c3-c5d48_1.pdf

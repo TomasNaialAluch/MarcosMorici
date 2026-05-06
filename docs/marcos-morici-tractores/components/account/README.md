@@ -12,4 +12,4 @@ Estructura pensada para escalar (chat, publicaciones, preferencias).
 
 Rutas Next.js: **`/acceso`** (ingresar o registrarse), `/cuenta/perfil`, `/cuenta/mensajes`. Las rutas `/login` y `/registro` redirigen a `/acceso` con la pestaña correspondiente.
 
-Modelo de datos y roles: **`README_DATABASE.md`**.
+Modelo de datos y roles: [`README_DATABASE.md`](../../README_DATABASE.md).

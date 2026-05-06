@@ -17,7 +17,7 @@ export default function PerfilResumen() {
 
       {profileError && (
         <p className="text-sm text-red-700 bg-red-50 border border-red-100 rounded-lg px-3 py-2" role="alert">
-          {profileError} — revisá reglas de lectura de la colección <code>users</code> en Firebase.
+          {profileError}
         </p>
       )}
 

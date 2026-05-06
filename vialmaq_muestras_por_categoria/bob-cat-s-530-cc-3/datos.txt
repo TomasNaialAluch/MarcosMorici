@@ -1,0 +1,30 @@
+NOTA: La subcategoría en Vialmaq no tenía productos en listado; se usó un equipo de referencia (misma familia / visible en catálogo general).
+
+Categoría (barra Comprar): Minicargadoras
+URL categoría: https://www.vialmaq.com.ar/quiero-comprar/minicargadoras
+
+Nombre: BOBCAT S-530 cc
+URL producto: https://vialmaq.com.ar/bob-cat-s-530-cc-3
+SKU: V155
+Precio (meta): 0 USD
+
+Descripción (resumen):
+La minicargadora Bobcat S530 es una máquina ágil y potente, destacada por su trayectoria de elevación vertical que la hace ideal para la carga de camiones y trabajos de acopio en espacios reducidos. Su diseño de la Serie M prioriza la visibilidad del operador y la durabilidad, ofreciendo un rendimiento superior en tareas de construcción, paisajismo y agricultura.
+
+Motor: KUBOTA (4 cilindros)
+
+Potencia: 48.9 HP
+
+Capacidad Operativa: 869 kg 
+Neumáticos: 10 x 16.5
+ 
+
+VER FOLLETO CON CARACTERÍSTICAS TÉCNICAS
+
+Características (tabla):
+  - Marca: Bobcat
+  - Modelo: S-530
+  - Peso total (Kg): 2815
+
+Imagen principal (og:image): https://vialmaq.com.ar/media/catalog/product/cache/93008ecae4fdb64aa4b5ab631bf5d57c/i/m/img_3_1.jpg
+PDF adjunto: (no disponible)

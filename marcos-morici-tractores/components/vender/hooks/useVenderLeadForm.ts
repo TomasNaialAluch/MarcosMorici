@@ -16,6 +16,8 @@ export interface UseVenderLeadFormReturn {
   state: VenderFormState;
   errors: VenderFormErrors;
   bannerError: string | null;
+  /** Aviso si el lead se guardó pero falló la subida a Storage (o bucket ausente). */
+  storageWarning: string | null;
   submitting: boolean;
   submitSuccess: boolean;
   lastLeadId: string | null;
@@ -33,6 +35,7 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
   const [state, setState] = useState<VenderFormState>(createInitialVenderFormState);
   const [errors, setErrors] = useState<VenderFormErrors>({});
   const [bannerError, setBannerError] = useState<string | null>(null);
+  const [storageWarning, setStorageWarning] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [lastLeadId, setLastLeadId] = useState<string | null>(null);
@@ -51,6 +54,7 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
 
   const goNext = useCallback(() => {
     setBannerError(null);
+    setStorageWarning(null);
     const e = validateStepMachine(state);
     setErrors(e);
     if (Object.keys(e).length > 0) return;
@@ -62,6 +66,7 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
     setState((s) => ({ ...s, step: 0 }));
     setErrors({});
     setBannerError(null);
+    setStorageWarning(null);
   }, []);
 
   const openLeadWhatsApp = useCallback(() => {
@@ -70,6 +75,7 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
 
   const submit = useCallback(async () => {
     setBannerError(null);
+    setStorageWarning(null);
     const fileErr = validateVenderFiles(state.folleto, state.imagenes);
     if (fileErr) {
       setErrors({});
@@ -93,9 +99,11 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
         setSubmitSuccess(true);
         setLastLeadId(result.leadId ?? null);
         setBannerError(null);
+        setStorageWarning(result.storageWarning ?? null);
       } else {
         setSubmitSuccess(false);
         setLastLeadId(null);
+        setStorageWarning(null);
         setBannerError(
           result.error ??
             'No pudimos registrar la consulta. Podés enviar los mismos datos por WhatsApp.'
@@ -110,6 +118,7 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
     setState(createInitialVenderFormState());
     setErrors({});
     setBannerError(null);
+    setStorageWarning(null);
     setSubmitSuccess(false);
     setLastLeadId(null);
   }, []);
@@ -118,6 +127,7 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
     state,
     errors,
     bannerError,
+    storageWarning,
     submitting,
     submitSuccess,
     lastLeadId,

@@ -6,7 +6,7 @@
 
 Este documento une: (1) el análisis tipo Vialmaq, (2) el **mapa de la pantalla** que definimos (breadcrumb, barra de categorías con iconografía, filtros a la izquierda minimizables, orden a la derecha, cards al centro), y (3) el **orden sugerido** para implementar o pulir cada parte, indicando qué ya existe en código y qué falta o conviene mejorar.
 
-Complementa [`README_VIALMAQ_ANALISIS.md`](./README_VIALMAQ_ANALISIS.md) y las guías de UX y color en la raíz del repo (`README_UX_UI.md`, `README_PALETA_COLORES.md`).
+Complementa [`README_VIALMAQ_ANALISIS.md`](./README_VIALMAQ_ANALISIS.md) y las guías de UX y color en **`docs/`**: [`README_UX_UI.md`](../README_UX_UI.md), [`README_PALETA_COLORES.md`](../README_PALETA_COLORES.md).
 
 ---
 
@@ -131,7 +131,7 @@ Contenedor: `<article>` con **fondo blanco**, `rounded-lg`, **borde** `#E0E5E9`,
 | **Fila metadatos + precio** | `flex justify-between` bajo el título | **Izquierda:** año y/o horas con iconos (§2.5.2 celdas siguientes). **Derecha:** badge «Venta» + bloque de precio alineados a la derecha (`items-end`). |
 | **Especificaciones** | Columna izquierda | **Año** y **horas** con iconos en `text-sm` gris `#5A6C7D`; altura mínima si faltan ambos para alinear cards en el grid. |
 | **Estado + precio** | Columna derecha | Badge **«Venta»** pill con **borde verde** `#4A7C59` y texto verde. **Precio** debajo (`text-xl` negrita navy) o **«Consultar valor»**. |
-| **CTA** | `Link` ancho completo | Texto **«Ver equipo»**; borde 2px navy, hover **naranja** `#D9773F` relleno + texto blanco (`README_PALETA_COLORES.md`). Enlaza a la misma query de detalle que imagen y título. |
+| **CTA** | `Link` ancho completo | Texto **«Ver equipo»**; borde 2px navy, hover **naranja** `#D9773F` relleno + texto blanco ([`README_PALETA_COLORES.md`](../README_PALETA_COLORES.md)). Enlaza a la misma query de detalle que imagen y título. |
 
 **Rutas de interacción:** tres superficies llevan al detalle — imagen, título y botón «Ver equipo» — todas con `?equipo=<slug>` codificado.
 
@@ -290,7 +290,7 @@ Descripción según **screenshot** de la barra horizontal bajo el grid en la mis
 ### 5.8 Grid de cards
 
 - Responsive: 1 col móvil, 2 tablet, 3 desktop típico.
-- **Anatomía de cada card** (referencia Vialmaq + implementación `EquipoCard`): ver **§2.5** (subapartados 2.5.1–2.5.5). Documentación UX general del repo: `README_UX_UI.md`.
+- **Anatomía de cada card** (referencia Vialmaq + implementación `EquipoCard`): ver **§2.5** (subapartados 2.5.1–2.5.5). Documentación UX general: [`README_UX_UI.md`](../README_UX_UI.md).
 
 ---
 
@@ -316,7 +316,7 @@ Los conteos por marca no deben estar hardcodeados; deben calcularse sobre el con
 
 ## 7. Identidad Marcos Morici (resumen)
 
-- No replicar el amarillo marketplace de Vialmaq: usar **navy** `#1E3A5F`, **verde** `#4A7C59`, **naranja** `#D9773F` en acentos y CTAs (detalle en `README_PALETA_COLORES.md`).
+- No replicar el amarillo marketplace de Vialmaq: usar **navy** `#1E3A5F`, **verde** `#4A7C59`, **naranja** `#D9773F` en acentos y CTAs (detalle en [`README_PALETA_COLORES.md`](../README_PALETA_COLORES.md)).
 - Badge **VENTA** en verde; CTA **Ver equipo** / **Consultar por WhatsApp** en detalle.
 - Navegación principal: **Comprar · Vender · Nosotros** (sin Alquilar, salvo que el negocio cambie).
 
@@ -367,7 +367,7 @@ Los conteos por marca no deben estar hardcodeados; deben calcularse sobre el con
 
 - [`README_VIALMAQ_ANALISIS.md`](./README_VIALMAQ_ANALISIS.md) — rutas y modelo base.
 - [`README_ENV.md`](./README_ENV.md) — variables (Firebase, WhatsApp, etc.).
-- `README_UX_UI.md` / `README_PALETA_COLORES.md` (raíz del repo) — header, cards, colores.
+- [`README_UX_UI.md`](../README_UX_UI.md) / [`README_PALETA_COLORES.md`](../README_PALETA_COLORES.md) (`docs/`) — header, cards, colores.
 
 ---
 

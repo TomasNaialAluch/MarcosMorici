@@ -29,6 +29,14 @@ export default function VenderLeadForm() {
           Gracias por los datos. Nos pondremos en contacto a la brevedad. Si querés, podés abrir WhatsApp con el
           mismo resumen para coordinar fotos o documentación.
         </p>
+        {v.storageWarning ? (
+          <div
+            className="mb-6 mx-auto max-w-lg rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-left text-sm text-amber-950"
+            role="status"
+          >
+            <strong className="font-semibold">Archivos:</strong> {v.storageWarning} Los datos del formulario sí quedaron registrados.
+          </div>
+        ) : null}
         {v.lastLeadId ? (
           <p className="text-xs text-[#5A6C7D] mb-6 font-mono">Ref. interna: {v.lastLeadId}</p>
         ) : null}

@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from 'react';
 import { onAuthStateChanged, signOut as firebaseSignOut, type User } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
 import { getClientAuth } from '@/lib/firebase/config';
 import { ensureUserProfile, fetchUserProfile } from '@/lib/firebase/userProfile';
 import type { UserProfile } from '@/lib/types/user';
@@ -52,7 +53,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setProfile(p);
     } catch (e) {
       setProfile(null);
-      setProfileError(e instanceof Error ? e.message : 'No se pudo cargar el perfil.');
+      if (e instanceof FirebaseError && e.code === 'permission-denied') {
+        setProfileError(
+          'No se pudo guardar o leer tu perfil (permission-denied). Desplegá las reglas de Firestore del proyecto que incluyen la colección `users`, o revisá en Firebase Console → Firestore → Reglas.'
+        );
+      } else {
+        setProfileError(e instanceof Error ? e.message : 'No se pudo cargar el perfil.');
+      }
     }
   }, []);
 

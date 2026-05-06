@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { getClientAuth } from '@/lib/firebase/config';
+import { formatAuthError } from '@/lib/firebase/authFormatError';
+import { getClientAuth, isFirebaseWebAppReady } from '@/lib/firebase/config';
 import SocialAuthButtons from '@/components/account/auth/SocialAuthButtons';
 
 const inputClass =
@@ -25,9 +26,15 @@ export default function LoginForm() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!isFirebaseWebAppReady()) {
+      setError(
+        'Firebase no está configurado: creá `.env.local` con NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_PROJECT_ID y NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN (podés partir de `.env.example`). Reiniciá `npm run dev`.'
+      );
+      return;
+    }
     const auth = getClientAuth();
     if (!auth) {
-      setError('Firebase no está configurado (variables de entorno).');
+      setError('No se pudo iniciar la sesión en el navegador. Recargá la página e intentá de nuevo.');
       return;
     }
     setPending(true);
@@ -36,7 +43,7 @@ export default function LoginForm() {
       router.replace(redirect);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión.');
+      setError(formatAuthError(err, 'Error al iniciar sesión.'));
     } finally {
       setPending(false);
     }

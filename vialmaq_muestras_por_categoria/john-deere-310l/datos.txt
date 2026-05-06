@@ -1,0 +1,25 @@
+Categoría (barra Comprar): Retropalas
+URL categoría: https://www.vialmaq.com.ar/quiero-comprar/miniexcavadoras
+
+Nombre: CASE 770EX 4x4
+URL producto: https://vialmaq.com.ar/john-deere-310l
+SKU: V082
+Precio (meta): 73000 USD
+
+Descripción (resumen):
+RETROPALA CASE 770EX 4WD
+La CASE 770EX 4WD es una retroexcavadora potente y versátil, con un motor de 86 HP y tracción en las cuatro ruedas para un rendimiento superior en terrenos exigentes. Su diseño robusto, bajo consumo de combustible y comodidad para el operador la convierten en una opción eficiente para la construcción y movimiento de materiales.
+ 
+VER FOLLETO CON CARACTERÍSTICAS TÉCNICAS
+
+Características (tabla):
+  - Marca: Case
+  - Modelo: 770EX 4x4
+  - Condición: Usado
+  - Año de fabricación: 2024
+  - Horas de uso: 500
+  - Peso total (Kg): 7711
+  - Capacidad de balde (m3): 1
+
+Imagen principal (og:image): https://vialmaq.com.ar/media/catalog/product/cache/93008ecae4fdb64aa4b5ab631bf5d57c/p/o/portada.jpg
+PDF adjunto: https://vialmaq.com.ar/media/catalog/product/attachment/7/7/770ex-series-backhoe-loaders-brochure-in-en_250207_131535.pdf

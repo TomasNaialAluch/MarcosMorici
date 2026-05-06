@@ -19,7 +19,7 @@ export default function MensajesPanel() {
       <div className="rounded-lg border border-[#E0E5E9] bg-[#F8FAFB] p-6 text-sm text-[#5A6C7D]">
         <p className="font-semibold text-[#1E3A5F] mb-2">Próximo paso (backend)</p>
         <p>
-          El modelo de datos está descrito en <code className="text-xs bg-white px-1 rounded border">README_DATABASE.md</code>{' '}
+          El modelo de datos está descrito en <code className="text-xs bg-white px-1 rounded border">docs/marcos-morici-tractores/README_DATABASE.md</code>{' '}
           (colección <code className="text-xs bg-white px-1 rounded border">conversaciones</code>, mensajes con{' '}
           <code className="text-xs bg-white px-1 rounded border">senderRole</code>). Esta pantalla listará hilos reales
           cuando existan reglas y documentos.

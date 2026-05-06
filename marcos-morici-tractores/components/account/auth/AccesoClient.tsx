@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useMemo } from 'react';
 import LoginForm from '@/components/account/auth/LoginForm';
 import RegisterForm from '@/components/account/auth/RegisterForm';
+import { isFirebaseWebAppReady } from '@/lib/firebase/config';
 
 const tabBtn =
   'flex-1 rounded-lg py-3 text-sm font-bold uppercase transition-colors border-2 border-transparent';
@@ -33,6 +34,19 @@ function AccesoInner() {
 
   return (
     <div className="max-w-lg mx-auto">
+      {!isFirebaseWebAppReady() ? (
+        <div
+          className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+          role="status"
+        >
+          <strong className="font-semibold">Firebase:</strong> faltan variables en el entorno. Copiá{' '}
+          <code className="rounded bg-white/80 px-1">.env.example</code> a{' '}
+          <code className="rounded bg-white/80 px-1">.env.local</code> con{' '}
+          <code className="rounded bg-white/80 px-1">NEXT_PUBLIC_FIREBASE_*</code> y el dominio de Auth, y reiniciá el
+          servidor. En la consola de Firebase activá <strong>Correo/contraseña</strong> y/o <strong>Google</strong> en
+          Authentication.
+        </div>
+      ) : null}
       <header className="mb-8 text-center">
         <h1 className="text-2xl font-bold text-[#1E3A5F]">Ingresar o registrarse</h1>
         <p className="mt-2 text-sm text-[#5A6C7D]">

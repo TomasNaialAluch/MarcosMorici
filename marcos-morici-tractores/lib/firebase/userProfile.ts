@@ -36,17 +36,24 @@ export async function ensureUserProfile(
   uid: string,
   fields: { email: string | null; displayName: string | null; photoURL: string | null }
 ): Promise<void> {
-  if (!db) return;
+  if (!db) {
+    throw new Error(
+      'Firestore no está disponible. Completá NEXT_PUBLIC_FIREBASE_* en `.env.local` (mismo proyecto que Authentication) y reiniciá el servidor.'
+    );
+  }
 
   const ref = doc(db, USERS, uid);
   const snap = await getDoc(ref);
   const now = serverTimestamp();
+  const email = fields.email ?? null;
+  const displayName = fields.displayName ?? null;
+  const photoURL = fields.photoURL ?? null;
 
   if (!snap.exists()) {
     await setDoc(ref, {
-      email: fields.email,
-      displayName: fields.displayName,
-      photoURL: fields.photoURL,
+      email,
+      displayName,
+      photoURL,
       role: 'user' satisfies AccountRole,
       createdAt: now,
       updatedAt: now,
@@ -55,15 +62,19 @@ export async function ensureUserProfile(
   }
 
   await updateDoc(ref, {
-    email: fields.email,
-    displayName: fields.displayName,
-    photoURL: fields.photoURL,
+    email,
+    displayName,
+    photoURL,
     updatedAt: now,
   });
 }
 
 export async function fetchUserProfile(uid: string): Promise<UserProfile | null> {
-  if (!db) return null;
+  if (!db) {
+    throw new Error(
+      'Firestore no está disponible. Completá NEXT_PUBLIC_FIREBASE_* en `.env.local` y reiniciá el servidor.'
+    );
+  }
   const ref = doc(db, USERS, uid);
   const snap = await getDoc(ref);
   if (!snap.exists()) return null;

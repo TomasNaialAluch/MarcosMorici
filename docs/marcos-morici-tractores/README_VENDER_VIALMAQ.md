@@ -198,7 +198,7 @@ Los demás campos del paso 1 son **siempre visibles** en la definición analizad
 | Archivos | PDF + imágenes opcionales | **Firebase Storage** con reglas estrictas + tipos MIME |
 | Moneda | ARS / USD | Alinear con catálogo (USD predominante en cards de compra) |
 | Spam | reCAPTCHA Amasty | **Turnstile / reCAPTCHA v3** + rate limit en backend |
-| Identidad visual | Botón amarillo #FFD000 | Usar paleta propia: CTAs **navy / naranja** — [`README_PALETA_COLORES.md`](../README_PALETA_COLORES.md) en raíz del repo |
+| Identidad visual | Botón amarillo #FFD000 | Usar paleta propia: CTAs **navy / naranja** — [`README_PALETA_COLORES.md`](../../README_PALETA_COLORES.md) (carpeta `docs/`) |
 
 La página actual **`app/vender/page.tsx`** solo muestra breadcrumb y «Página en construcción»; este README puede usarse como **checklist funcional** al implementarla.
 

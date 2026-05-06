@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { getClientAuth } from '@/lib/firebase/config';
+import { formatAuthError } from '@/lib/firebase/authFormatError';
+import { getClientAuth, isFirebaseWebAppReady } from '@/lib/firebase/config';
 import SocialAuthButtons from '@/components/account/auth/SocialAuthButtons';
 
 const inputClass =
@@ -34,9 +35,15 @@ export default function RegisterForm() {
       setError('La contraseña debe tener al menos 6 caracteres.');
       return;
     }
+    if (!isFirebaseWebAppReady()) {
+      setError(
+        'Firebase no está configurado: creá `.env.local` con las claves web del proyecto (incluido NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN). Reiniciá `npm run dev`.'
+      );
+      return;
+    }
     const auth = getClientAuth();
     if (!auth) {
-      setError('Firebase no está configurado (variables de entorno).');
+      setError('No se pudo crear la cuenta en el navegador. Recargá la página e intentá de nuevo.');
       return;
     }
     setPending(true);
@@ -49,7 +56,7 @@ export default function RegisterForm() {
       router.replace(redirect);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al registrarse.');
+      setError(formatAuthError(err, 'Error al registrarse.'));
     } finally {
       setPending(false);
     }

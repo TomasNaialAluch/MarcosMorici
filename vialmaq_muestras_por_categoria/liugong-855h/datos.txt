@@ -1,0 +1,24 @@
+Categoría (barra Comprar): Cargadoras
+URL categoría: https://www.vialmaq.com.ar/quiero-comprar/cargadoras
+
+Nombre: LIUGONG 855H
+URL producto: https://vialmaq.com.ar/liugong-855h
+SKU: CARG0002
+Precio (meta): 98000 USD
+
+Descripción (resumen):
+La Liugong 855H es una cargadora frontal potente ideal para tareas de construcción, minería, manejo de materiales y otros trabajos que requieran productividad. Tiene un motor Cummins 6LT9.3 de 6 cilindros turboalimentado con 220 HP de potencia. La fuerza de desprendimiento del balde es de 165 KN. 
+ 
+VER FOLLETO CON CARACTERISTICAS TÉCNICAS
+
+Características (tabla):
+  - Marca: Liugong
+  - Modelo: 855h
+  - Condición: Usado
+  - Año de fabricación: 2022
+  - Horas de uso: 1900
+  - Peso total (Kg): 16700
+  - Capacidad de balde (m3): 3
+
+Imagen principal (og:image): https://vialmaq.com.ar/media/catalog/product/cache/93008ecae4fdb64aa4b5ab631bf5d57c/2/0/20250521_112139_resized_1.jpg
+PDF adjunto: https://vialmaq.com.ar/media/catalog/product/attachment/8/5/855h.pdf

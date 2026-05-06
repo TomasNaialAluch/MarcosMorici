@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FirebaseError } from 'firebase/app';
+import { isFirestoreConfigured } from '@/lib/firebase/config';
 import { fetchEquiposPublicados } from '@/lib/firebase/equipos';
 import type { Equipo, SortOption } from '@/lib/types/equipo';
 import {
@@ -92,11 +94,30 @@ export function useCatalogoEquipos({ initialSearch = '' }: UseCatalogoEquiposArg
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
+    if (!isFirestoreConfigured()) {
+      setError(
+        'Firebase no está conectado: creá `.env.local` en la carpeta del proyecto con NEXT_PUBLIC_FIREBASE_API_KEY y NEXT_PUBLIC_FIREBASE_PROJECT_ID (y el resto de claves web). Podés partir de `.env.example`. Reiniciá `npm run dev` después de guardar.'
+      );
+      setRaw([]);
+      setLoading(false);
+      return;
+    }
     try {
       const list = await fetchEquiposPublicados();
       setRaw(list);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudieron cargar los equipos.');
+      let msg = 'No se pudieron cargar los equipos.';
+      if (e instanceof FirebaseError) {
+        if (e.code === 'permission-denied') {
+          msg =
+            'Firestore bloqueó la lectura (permission-denied). En Firebase Console → Firestore → Reglas, permití lectura de la colección `equipos` para catálogo público (o desplegá las reglas de ejemplo del repo: `firebase deploy --only firestore:rules`).';
+        } else {
+          msg = `${e.message} (${e.code})`;
+        }
+      } else if (e instanceof Error) {
+        msg = e.message;
+      }
+      setError(msg);
       setRaw([]);
     } finally {
       setLoading(false);

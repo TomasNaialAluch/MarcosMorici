@@ -30,6 +30,16 @@ const app = getOrInitApp();
 export const db: Firestore | null = app ? getFirestore(app) : null;
 export const storage: FirebaseStorage | null = app ? getStorage(app) : null;
 
+/** App web de Firebase inicializada (misma base que Auth y Firestore). */
+export function isFirebaseWebAppReady(): boolean {
+  return Boolean(app);
+}
+
+/** Cliente Firestore listo (variables `NEXT_PUBLIC_FIREBASE_*` presentes en el build). */
+export function isFirestoreConfigured(): boolean {
+  return Boolean(app && db);
+}
+
 /** Auth solo en el navegador; usar en componentes `use client`. */
 export function getClientAuth(): Auth | null {
   if (!app || typeof window === 'undefined') return null;

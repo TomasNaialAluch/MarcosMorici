@@ -75,7 +75,7 @@ Coloca videos adicionales en `/public/videos/`
 
 ## 📚 Documentación
 
-- Ver `README_GUIA_CONSTRUCCION.md` para la guía completa de desarrollo
-- Ver `README_ASSETS.md` para detalles sobre los assets
-- Ver `README_PALETA_COLORES.md` para la paleta de colores
-- Ver `README_UX_UI.md` para la guía de diseño
+- Ver [`docs/README_GUIA_CONSTRUCCION.md`](../docs/README_GUIA_CONSTRUCCION.md) para la guía completa de desarrollo
+- Ver [`docs/marcos-morici-tractores/README_ASSETS.md`](../docs/marcos-morici-tractores/README_ASSETS.md) para detalles sobre los assets
+- Ver [`docs/README_PALETA_COLORES.md`](../docs/README_PALETA_COLORES.md) para la paleta de colores
+- Ver [`docs/README_UX_UI.md`](../docs/README_UX_UI.md) para la guía de diseño
