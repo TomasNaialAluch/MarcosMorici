@@ -1,7 +1,7 @@
-import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
+import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getStorage, type FirebaseStorage } from 'firebase/storage';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
@@ -14,21 +14,33 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase solo si no está ya inicializado
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const hasFirebase = Boolean(
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.trim() &&
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID?.trim()
+);
 
-// Inicializar servicios
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-export const auth = getAuth(app);
+function getOrInitApp(): FirebaseApp | undefined {
+  if (!hasFirebase) return undefined;
+  if (getApps().length > 0) return getApps()[0];
+  return initializeApp(firebaseConfig);
+}
 
-// Analytics solo en el cliente
+const app = getOrInitApp();
+
+export const db: Firestore | null = app ? getFirestore(app) : null;
+export const storage: FirebaseStorage | null = app ? getStorage(app) : null;
+
+/** Auth solo en el navegador; usar en componentes `use client`. */
+export function getClientAuth(): Auth | null {
+  if (!app || typeof window === 'undefined') return null;
+  return getAuth(app);
+}
+
 export const initAnalytics = async () => {
-  if (typeof window !== 'undefined') {
-    const supported = await isSupported();
-    if (supported) {
-      return getAnalytics(app);
-    }
+  if (!app || typeof window === 'undefined') return null;
+  const supported = await isSupported();
+  if (supported) {
+    return getAnalytics(app);
   }
   return null;
 };

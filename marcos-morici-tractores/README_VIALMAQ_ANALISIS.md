@@ -2,6 +2,8 @@
 
 Sitio de referencia: [vialmaq.com.ar](https://vialmaq.com.ar/)
 
+**Formulario «Quiero vender» (detalle técnico):** [`README_VENDER_VIALMAQ.md`](./README_VENDER_VIALMAQ.md).
+
 Este documento analiza la estructura de Vialmaq para guiar el desarrollo de Marcos Morici Tractores. **No implementaremos alquileres**, solo venta de equipos.
 
 ---

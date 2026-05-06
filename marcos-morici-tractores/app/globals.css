@@ -68,3 +68,40 @@ body {
 .loader-fade-out {
   animation: fadeOut 0.5s ease-out forwards;
 }
+
+/* Sliders dobles catálogo (§5 README): mangos visibles, marca propia (verde). */
+.catalogo-range-thumb[type='range'] {
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+.catalogo-range-thumb[type='range']::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--color-secondary);
+  border: 2px solid var(--color-primary);
+  cursor: grab;
+  margin-top: -6px;
+}
+.catalogo-range-thumb[type='range']::-moz-range-thumb {
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--color-secondary);
+  border: 2px solid var(--color-primary);
+  cursor: grab;
+}
+.catalogo-range-thumb[type='range']::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+}
+.catalogo-range-thumb[type='range']::-moz-range-track {
+  height: 6px;
+  background: transparent;
+}

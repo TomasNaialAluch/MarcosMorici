@@ -1,0 +1,3 @@
+Copias locales de referencia de la barra de categorías de vialmaq.com.ar (PNG públicos).
+Uso en producción o marca pública: solo con permiso por escrito del titular de los derechos.
+Origen documentado en README_COMPRAR_VIALMAQ.md (sección 2.4.1).

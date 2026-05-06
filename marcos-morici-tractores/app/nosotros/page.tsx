@@ -124,7 +124,7 @@ export default function Nosotros() {
             Nuestros Valores
           </h2>
           <p className="text-[#5A6C7D] mb-10 max-w-2xl">
-            En Marcos Morici Tractores, nuestros valores fundamentales son los pilares que guían cada aspecto de nuestra operación.
+            Estos son los principios con los que trabajamos día a día, en el taller y con cada cliente.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {valores.map((v, i) => (

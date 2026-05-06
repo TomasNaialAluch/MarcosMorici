@@ -3,11 +3,26 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import ExpandableSearch from '@/components/ExpandableSearch';
+import HeaderAccount from '@/components/account/layout/HeaderAccount';
 import './Header.css';
 
 export default function Header() {
+  const pathname = usePathname();
+  const router = useRouter();
   const [phase, setPhase] = useState<'hidden' | 'animating' | 'visible'>('hidden');
+
+  const navLinkClass = (path: string, matchPrefix?: boolean) => {
+    const active = matchPrefix
+      ? pathname === path || pathname.startsWith(`${path}/`)
+      : pathname === path;
+    return `font-semibold uppercase text-base md:text-lg transition-colors header-link ${
+      active
+        ? 'text-[#1E3A5F] border-b-[3px] border-[#4A7C59] pb-0.5 md:pb-1'
+        : 'text-[#1E3A5F] border-b-[3px] border-transparent hover:text-[#4A7C59] pb-0.5 md:pb-1'
+    }`;
+  };
 
   useEffect(() => {
     // Secuencia: loader (7s) + fade (0.5s) -> animacion navbar -> estado final estable.
@@ -64,33 +79,38 @@ export default function Header() {
       <nav className="bg-white border-b border-[#E0E5E9] navbar-white">
         <div className="container mx-auto px-4">
           {/* Mobile: columna (links centrados + buscador abajo). Desktop: fila (links izq + buscador der) */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between py-4 md:py-0 md:h-16 gap-4 md:gap-0">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between py-4 md:py-0 md:h-16 gap-4 md:gap-6 w-full">
             <div className="flex items-center justify-center md:justify-start gap-6 md:gap-8 header-links-container md:ml-[9%]">
               <Link
                 href="/comprar"
-                className="text-[#1E3A5F] font-semibold uppercase text-base md:text-lg hover:text-[#4A7C59] transition-colors header-link"
+                className={navLinkClass('/comprar', true)}
                 data-delay="0"
               >
                 Comprar
               </Link>
               <Link
                 href="/vender"
-                className="text-[#1E3A5F] font-semibold uppercase text-base md:text-lg hover:text-[#4A7C59] transition-colors header-link"
+                className={navLinkClass('/vender')}
                 data-delay="1"
               >
                 Vender
               </Link>
               <Link
                 href="/nosotros"
-                className="text-[#1E3A5F] font-semibold uppercase text-base md:text-lg hover:text-[#4A7C59] transition-colors header-link"
+                className={navLinkClass('/nosotros')}
                 data-delay="2"
               >
                 Nosotros
               </Link>
             </div>
-            <div className="flex justify-center w-full md:w-auto md:flex-1 md:justify-end header-search-wrap">
-              <ExpandableSearch placeholder="Buscar..." ariaLabel="Buscar" />
-            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:flex-1 md:justify-end header-search-wrap">
+                <HeaderAccount />
+                <ExpandableSearch
+                  placeholder="¿Qué estás buscando?"
+                  ariaLabel="Buscar en catálogo"
+                  onSearch={(q) => router.push(`/comprar?q=${encodeURIComponent(q)}`)}
+                />
+              </div>
           </div>
         </div>
       </nav>

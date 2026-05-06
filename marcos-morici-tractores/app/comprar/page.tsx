@@ -1,17 +1,32 @@
-import Breadcrumb from '@/components/Breadcrumb';
+'use client';
 
-export default function Comprar() {
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import CatalogoClient from '@/components/comprar/CatalogoClient';
+import ComprarEquipoQueryRedirect from '@/components/comprar/ComprarEquipoQueryRedirect';
+
+function ComprarCatalogInner() {
+  const sp = useSearchParams();
+  const q = sp.get('q') ?? '';
+  const equipo = sp.get('equipo') ?? '';
+  if (equipo.trim()) {
+    return <ComprarEquipoQueryRedirect slug={equipo} />;
+  }
+  return <CatalogoClient initialSearch={q} />;
+}
+
+function CatalogoFallback() {
   return (
-    <div className="min-h-screen bg-white">
-      <Breadcrumb items={[{ label: 'Inicio', href: '/' }, { label: 'Comprar' }]} />
-      <div className="container mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-[#1E3A5F] uppercase mb-4">
-          Comprar
-        </h1>
-        <p className="text-lg text-[#5A6C7D]">
-          Página en construcción
-        </p>
-      </div>
+    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="h-32 w-full max-w-2xl rounded-lg bg-[#F0F3F6] animate-pulse" />
     </div>
+  );
+}
+
+export default function ComprarPage() {
+  return (
+    <Suspense fallback={<CatalogoFallback />}>
+      <ComprarCatalogInner />
+    </Suspense>
   );
 }
