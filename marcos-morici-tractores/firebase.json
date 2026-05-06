@@ -6,6 +6,7 @@
     "rules": "storage.rules"
   },
   "hosting": {
+    "site": "marcosmorici-b38b8",
     "public": "out",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   }
