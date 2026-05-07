@@ -28,6 +28,7 @@ export default function CuentaTabs() {
   return (
     <nav className="mb-8 flex flex-wrap gap-2 border-b border-[#E0E5E9] pb-4" aria-label="Secciones de cuenta">
       {tab('/cuenta/perfil', 'Perfil', pathname)}
+      {tab('/cuenta/publicaciones', 'Publicaciones', pathname)}
       {tab('/cuenta/mensajes', 'Mensajes', pathname)}
     </nav>
   );

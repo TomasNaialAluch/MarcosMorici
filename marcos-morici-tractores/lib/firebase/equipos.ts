@@ -89,6 +89,7 @@ export function equipoFromDoc(id: string, data: DocumentData): Equipo {
       typeof data.capacidadBaldeM3 === 'number' ? data.capacidadBaldeM3 : undefined,
     pesoTotalKg: typeof data.pesoTotalKg === 'number' ? data.pesoTotalKg : undefined,
     folletoPdfUrl: pickPdfUrl(data),
+    ownerId: typeof data.ownerId === 'string' && data.ownerId.trim() ? data.ownerId.trim() : undefined,
   };
 }
 

@@ -18,6 +18,9 @@ export default function HeaderAccount() {
   if (firebaseUser) {
     return (
       <div className="flex flex-wrap items-center justify-center gap-3 md:justify-end">
+        <Link href="/cuenta/publicaciones" className={linkClass}>
+          Publicaciones
+        </Link>
         <Link href="/cuenta/mensajes" className={linkClass}>
           Mensajes
         </Link>

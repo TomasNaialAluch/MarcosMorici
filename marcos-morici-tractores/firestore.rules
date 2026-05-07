@@ -1,13 +1,61 @@
 rules_version = '2';
 
-// Reglas mínimas para que /comprar lea `equipos` y los formularios de ficha escriban `equipoContactos`.
-// Después de editar: `firebase deploy --only firestore:rules` (con Firebase CLI y proyecto enlazado).
+// Desplegar: `firebase deploy --only firestore:rules`
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
     match /equipos/{id} {
-      // Coincide con el front: documentos sin `publicado` se tratan como publicados.
-      allow read: if !resource.data.keys().hasAny(['publicado']) || resource.data.publicado != false;
-      allow write: if false;
+      allow read: if (!resource.data.keys().hasAny(['publicado']) || resource.data.publicado != false)
+        || (request.auth != null
+          && resource.data.keys().hasAny(['ownerId'])
+          && resource.data.ownerId == request.auth.uid);
+
+      allow create: if request.auth != null
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.keys().hasAll([
+          'ownerId',
+          'marca',
+          'modelo',
+          'slug',
+          'imagenes',
+          'publicado',
+          'destacado',
+          'createdAt',
+          'updatedAt'
+        ])
+        && request.resource.data.marca is string
+        && request.resource.data.modelo is string
+        && request.resource.data.slug is string
+        && request.resource.data.imagenes is list
+        && request.resource.data.publicado is bool
+        && request.resource.data.destacado == false
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.updatedAt is timestamp
+        && request.resource.data.marca.size() >= 1
+        && request.resource.data.marca.size() <= 200
+        && request.resource.data.modelo.size() >= 1
+        && request.resource.data.modelo.size() <= 200;
+
+      allow update: if request.auth != null
+        && resource.data.keys().hasAny(['ownerId'])
+        && resource.data.ownerId == request.auth.uid
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.destacado == resource.data.destacado
+        && request.resource.data.marca is string
+        && request.resource.data.modelo is string
+        && request.resource.data.slug is string
+        && request.resource.data.imagenes is list
+        && request.resource.data.publicado is bool
+        && request.resource.data.updatedAt is timestamp;
+
+      allow delete: if request.auth != null
+        && resource.data.keys().hasAny(['ownerId'])
+        && resource.data.ownerId == request.auth.uid;
     }
 
     match /equipoContactos/{id} {
@@ -64,7 +112,6 @@ service cloud.firestore {
       allow read, update, delete: if false;
     }
 
-    // Perfil de cuenta (`lib/firebase/userProfile.ts`). El usuario solo toca su documento; no puede cambiar `role`.
     match /users/{userId} {
       allow read: if request.auth != null && request.auth.uid == userId;
       allow create: if request.auth != null && request.auth.uid == userId
@@ -85,6 +132,50 @@ service cloud.firestore {
       allow update: if request.auth != null && request.auth.uid == userId
         && request.resource.data.role == resource.data.role;
       allow delete: if false;
+    }
+
+    match /conversaciones/{cid} {
+      allow read: if request.auth != null
+        && (resource.data.customerUid == request.auth.uid || isAdmin());
+      allow create: if request.auth != null
+        && request.resource.data.customerUid == request.auth.uid
+        && request.resource.data.keys().hasAll([
+          'customerUid',
+          'title',
+          'lastMessage',
+          'createdAt',
+          'updatedAt'
+        ])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 1
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.lastMessage is string
+        && request.resource.data.lastMessage.size() <= 500
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.updatedAt is timestamp;
+      allow update: if request.auth != null
+        && (resource.data.customerUid == request.auth.uid || isAdmin())
+        && request.resource.data.customerUid == resource.data.customerUid;
+      allow delete: if false;
+
+      match /mensajes/{mid} {
+        allow read: if request.auth != null && (
+          get(/databases/$(database)/documents/conversaciones/$(cid)).data.customerUid == request.auth.uid
+          || isAdmin()
+        );
+        allow create: if request.auth != null
+          && request.resource.data.keys().hasAll(['senderUid', 'text', 'createdAt'])
+          && request.resource.data.senderUid == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() >= 1
+          && request.resource.data.text.size() <= 4000
+          && request.resource.data.createdAt is timestamp
+          && (
+            get(/databases/$(database)/documents/conversaciones/$(cid)).data.customerUid == request.auth.uid
+            || isAdmin()
+          );
+        allow update, delete: if false;
+      }
     }
   }
 }

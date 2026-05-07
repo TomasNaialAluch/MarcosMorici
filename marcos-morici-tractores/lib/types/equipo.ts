@@ -19,6 +19,8 @@ export interface Equipo {
   pesoTotalKg?: number;
   /** URL pública del folleto / ficha PDF (Storage u otro HTTPS). Alias en Firestore: `pdfUrl`, `documentoPdf`, `folletoUrl`. */
   folletoPdfUrl?: string;
+  /** UID de Firebase Auth del usuario que publicó (equipos cargados desde cuenta). */
+  ownerId?: string;
 }
 
 export type SortOption =
