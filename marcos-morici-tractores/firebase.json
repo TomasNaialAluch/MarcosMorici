@@ -8,6 +8,12 @@
   "hosting": {
     "site": "marcosmorici-b38b8",
     "public": "out",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "/comprar/**",
+        "destination": "/comprar/index.html"
+      }
+    ]
   }
 }

@@ -1,6 +1,7 @@
 /** Lead «quiero vender» — alineado al formulario Vialmaq / README_VENDER_VIALMAQ.md */
 
 export type TipoMaquinaria =
+  | ''
   | 'retroexcavadoras'
   | 'compactacion'
   | 'motoniveladoras'
@@ -22,13 +23,23 @@ export interface VenderFormState {
   horas: string;
   marca: string;
   modelo: string;
+  /** Título comercial en ficha (opcional). */
+  titulo: string;
+  /** Categoría alineada al catálogo «Comprar» (misma lista que publicaciones). */
+  categoria: string;
+  /** Código / SKU interno (opcional). */
+  sku: string;
   ano: string;
   precio: string;
+  /** Si está marcado, no hace falta importe en «Precio». */
+  precioConsultar: boolean;
   moneda: MonedaLead;
   pesoTotalKg: string;
   capacidadBaldeM3: string;
   descripcionMaquina: string;
   folleto: File | null;
+  /** URL del folleto PDF (alternativa o complemento al archivo). */
+  folletoUrl: string;
   imagenes: File[];
   nombreApellido: string;
   email: string;

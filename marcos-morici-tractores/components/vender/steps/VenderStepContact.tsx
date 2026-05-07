@@ -19,7 +19,6 @@ export default function VenderStepContact({ state, errors, setField }: VenderSte
         value={state.nombreApellido}
         onChange={(v) => setField('nombreApellido', v)}
         error={errors.nombreApellido}
-        required
         autoComplete="name"
       />
       <VenderTextField
@@ -29,7 +28,6 @@ export default function VenderStepContact({ state, errors, setField }: VenderSte
         value={state.email}
         onChange={(v) => setField('email', v)}
         error={errors.email}
-        required
         autoComplete="email"
       />
       <VenderTextField
@@ -39,7 +37,6 @@ export default function VenderStepContact({ state, errors, setField }: VenderSte
         value={state.celular}
         onChange={(v) => setField('celular', v)}
         error={errors.celular}
-        required
         autoComplete="tel"
       />
       <VenderTextField
@@ -48,7 +45,6 @@ export default function VenderStepContact({ state, errors, setField }: VenderSte
         value={state.ubicacion}
         onChange={(v) => setField('ubicacion', v)}
         error={errors.ubicacion}
-        required
       />
       <VenderTextareaField
         id="mensajeAdicional"

@@ -6,17 +6,18 @@ export function buildProductJsonLd(equipo: Equipo, pageUrl: string): Record<stri
   const images = equipo.imagenes.filter((u) => typeof u === 'string' && u.length > 0);
 
   const hasListedPrice = equipo.precio != null && !equipo.precioConsultar;
+  const offerCurrency = equipo.moneda === 'pesos' ? 'ARS' : 'USD';
 
   const offers: Record<string, unknown> = hasListedPrice
     ? {
         '@type': 'Offer',
-        priceCurrency: 'USD',
+        priceCurrency: offerCurrency,
         price: String(equipo.precio),
         availability: 'https://schema.org/InStock',
       }
     : {
         '@type': 'Offer',
-        priceCurrency: 'USD',
+        priceCurrency: offerCurrency,
         availability: 'https://schema.org/InStock',
         description: 'Precio a consultar con el vendedor.',
       };
@@ -32,7 +33,7 @@ export function buildProductJsonLd(equipo: Equipo, pageUrl: string): Record<stri
     description: equipo.descripcion?.slice(0, 5000) || undefined,
     image: images.length ? images : undefined,
     brand: { '@type': 'Brand', name: equipo.marca },
-    sku: equipo.slug,
+    sku: equipo.sku?.trim() || equipo.slug,
     category: equipo.categoria,
     offers,
   };

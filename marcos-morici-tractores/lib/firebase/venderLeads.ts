@@ -78,6 +78,12 @@ function parseNum(raw: string): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
+function folletoUrlFromInput(state: VenderFormState): string | null {
+  const u = state.folletoUrl.trim();
+  if (u.startsWith('https://') || u.startsWith('http://')) return u;
+  return null;
+}
+
 /**
  * Guarda el lead en Firestore (`venderLeads`) y sube adjuntos a Storage bajo `vender_leads/{clientFolder}/`.
  */
@@ -114,23 +120,28 @@ export async function persistVenderLead(state: VenderFormState): Promise<Persist
     filesUploaded = Boolean(folletoUrl || imagenesUrls.length > 0);
   }
 
-  const adjuntosUrls = [
-    ...(folletoUrl ? [folletoUrl] : []),
-    ...imagenesUrls,
-  ];
+  const folletoLink = folletoUrl ?? folletoUrlFromInput(state);
+
+  const adjuntosUrls = [...(folletoLink ? [folletoLink] : []), ...imagenesUrls];
+
+  const tipoVal = state.tipoMaquinaria.trim() ? state.tipoMaquinaria : null;
 
   const docPayload = {
     source: 'web-vender',
     clientFolder,
     createdAt: Timestamp.now(),
-    tipoMaquinaria: state.tipoMaquinaria,
+    tipoMaquinaria: tipoVal,
     tipoOtrosDescripcion: vis.tipoOtros ? state.tipoOtrosDescripcion.trim() || null : null,
     condicion: state.condicion,
     horas: vis.horas ? parseNum(state.horas) ?? null : null,
     marca: state.marca.trim(),
     modelo: state.modelo.trim(),
+    titulo: state.titulo.trim() || null,
+    categoriaCatalogo: state.categoria.trim() || null,
+    sku: state.sku.trim() || null,
     ano: parseNum(state.ano) ?? null,
-    precio: state.precio.trim(),
+    precio: state.precioConsultar ? 'Consultar' : state.precio.trim() || null,
+    precioConsultar: Boolean(state.precioConsultar),
     moneda: state.moneda,
     pesoTotalKg: vis.pesoTotalKg ? parseNum(state.pesoTotalKg) ?? null : null,
     capacidadBaldeM3: vis.capacidadBaldeM3 ? parseNum(state.capacidadBaldeM3) ?? null : null,
@@ -140,7 +151,8 @@ export async function persistVenderLead(state: VenderFormState): Promise<Persist
     celular: state.celular.trim(),
     ubicacion: state.ubicacion.trim(),
     mensajeAdicional: state.mensajeAdicional.trim() || null,
-    folletoUrl,
+    folletoUrl: folletoLink,
+    folletoUrlIngresada: folletoUrlFromInput(state),
     imagenesUrls,
     adjuntosUrls: adjuntosUrls.length ? adjuntosUrls : null,
   };

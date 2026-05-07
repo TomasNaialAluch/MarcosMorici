@@ -2,6 +2,7 @@
 
 import { useVenderLeadForm } from '@/components/vender/hooks/useVenderLeadForm';
 import VenderWizardShell from '@/components/vender/VenderWizardShell';
+import VenderFormProgress from '@/components/vender/VenderFormProgress';
 import VenderStepMachine from '@/components/vender/steps/VenderStepMachine';
 import VenderStepContact from '@/components/vender/steps/VenderStepContact';
 
@@ -65,6 +66,8 @@ export default function VenderLeadForm() {
           </button>
         </div>
       ) : null}
+
+      <VenderFormProgress state={v.state} />
 
       <VenderWizardShell currentStep={v.state.step}>
         {v.state.step === 0 ? (

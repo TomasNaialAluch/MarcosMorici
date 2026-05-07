@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/components/account/providers/AuthProvider';
 import type { Equipo } from '@/lib/types/equipo';
 import { deleteMisEquipo, fetchMisEquipos } from '@/lib/firebase/misEquipos';
-import { formatUsd } from '@/lib/catalog/catalogUtils';
+import { formatPrecioLista } from '@/lib/catalog/catalogUtils';
 
 export default function MisPublicacionesClient() {
   const { firebaseUser } = useAuth();
@@ -86,16 +86,16 @@ export default function MisPublicacionesClient() {
                 <p className="font-semibold text-[#1E3A5F] truncate">{e.titulo}</p>
                 <p className="text-xs text-[#5A6C7D]">
                   {e.publicado ? 'Visible en catálogo' : 'Borrador / no publicado'} ·{' '}
-                  {e.precioConsultar || e.precio == null ? 'Consultar' : formatUsd(e.precio)}
+                  {formatPrecioLista(e)}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 shrink-0">
-                <Link
+                <a
                   href={`/comprar/${encodeURIComponent(e.slug)}`}
                   className="rounded-lg border border-[#E0E5E9] px-3 py-1.5 text-xs font-semibold uppercase text-[#1E3A5F] hover:bg-[#F0F3F6]"
                 >
                   Ver
-                </Link>
+                </a>
                 <Link
                   href={`/cuenta/publicaciones/${e.id}/editar`}
                   className="rounded-lg border border-[#E0E5E9] px-3 py-1.5 text-xs font-semibold uppercase text-[#1E3A5F] hover:bg-[#F0F3F6]"

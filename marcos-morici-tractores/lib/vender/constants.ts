@@ -4,6 +4,7 @@ import type { TipoMaquinaria } from '@/lib/types/venderLead';
 export const VENDER_STEP_TITLES = ['Sobre la máquina', 'Datos de contacto'] as const;
 
 export const TIPO_MAQUINARIA_OPTIONS: { value: TipoMaquinaria; label: string }[] = [
+  { value: '', label: 'Elegir (opcional)' },
   { value: 'retroexcavadoras', label: 'Retroexcavadoras' },
   { value: 'compactacion', label: 'Equipos de compactación' },
   { value: 'motoniveladoras', label: 'Motoniveladoras' },

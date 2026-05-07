@@ -23,6 +23,44 @@ export function formatUsd(value: number): string {
   }).format(value);
 }
 
+export function formatArs(value: number): string {
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+/** Precio tal como en catálogo / detalle (respeta moneda del formulario Vender). */
+export function formatPrecioLista(equipo: Equipo): string {
+  if (equipo.precioConsultar || equipo.precio == null) return 'Consultar valor';
+  if (equipo.moneda === 'pesos') return formatArs(equipo.precio);
+  return formatUsd(equipo.precio);
+}
+
+/**
+ * Precio en tarjeta de catálogo — mismo criterio que `formatPrecioLista` pero con centavos (referencia Vialmaq: US$ 115.000,00).
+ */
+export function formatPrecioTarjeta(equipo: Equipo): string {
+  if (equipo.precioConsultar || equipo.precio == null) return 'Consultar valor';
+  const n = equipo.precio;
+  if (equipo.moneda === 'pesos') {
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(n);
+  }
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(n);
+}
+
 export function statsFromEquipos(equipos: Equipo[]) {
   const precios = equipos
     .map((e) => (e.precioConsultar ? null : e.precio))
@@ -71,7 +109,16 @@ export function statsFromEquipos(equipos: Equipo[]) {
 export function textoCoincideBusqueda(e: Equipo, q: string): boolean {
   const s = q.trim().toLowerCase();
   if (!s) return true;
-  const blob = [e.titulo, e.marca, e.modelo, e.descripcion ?? '', e.categoria ?? '']
+  const blob = [
+    e.titulo,
+    e.marca,
+    e.modelo,
+    e.descripcion ?? '',
+    e.categoria ?? '',
+    e.sku ?? '',
+    e.tipoMaquinaria ?? '',
+    e.tipoOtrosDescripcion ?? '',
+  ]
     .join(' ')
     .toLowerCase();
   return blob.includes(s);

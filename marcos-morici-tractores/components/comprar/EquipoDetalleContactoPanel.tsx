@@ -3,7 +3,7 @@
 import { useCallback, useState, type ReactNode } from 'react';
 import type { Equipo } from '@/lib/types/equipo';
 import { getWhatsAppUrl, getEquipmentMessage } from '@/lib/utils/whatsapp';
-import { formatUsd } from '@/lib/catalog/catalogUtils';
+import { formatPrecioLista } from '@/lib/catalog/catalogUtils';
 import { persistEquipoContacto } from '@/lib/firebase/equipoContacto';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -181,7 +181,7 @@ export default function EquipoDetalleContactoPanel({ equipo }: EquipoDetalleCont
           <p className="text-sm text-[#5A6C7D]">
             Precio listado:{' '}
             <strong className="text-[#1E3A5F]">
-              {equipo.precioConsultar || equipo.precio == null ? 'Consultar valor' : formatUsd(equipo.precio)}
+              {formatPrecioLista(equipo)}
             </strong>
           </p>
           <a

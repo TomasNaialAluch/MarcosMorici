@@ -73,42 +73,74 @@ service cloud.firestore {
           'clientFolder',
           'createdAt',
           'tipoMaquinaria',
+          'tipoOtrosDescripcion',
           'condicion',
+          'horas',
           'marca',
           'modelo',
+          'titulo',
+          'categoriaCatalogo',
+          'sku',
+          'ano',
           'precio',
+          'precioConsultar',
           'moneda',
+          'pesoTotalKg',
+          'capacidadBaldeM3',
+          'descripcionMaquina',
           'nombreApellido',
           'email',
           'celular',
-          'ubicacion'
+          'ubicacion',
+          'mensajeAdicional',
+          'folletoUrl',
+          'folletoUrlIngresada',
+          'imagenesUrls',
+          'adjuntosUrls'
         ])
         && request.resource.data.marca is string
         && request.resource.data.modelo is string
-        && request.resource.data.precio is string
+        && (request.resource.data.precio == null || request.resource.data.precio is string)
         && request.resource.data.nombreApellido is string
         && request.resource.data.email is string
         && request.resource.data.celular is string
         && request.resource.data.ubicacion is string
         && request.resource.data.clientFolder is string
         && request.resource.data.createdAt is timestamp
-        && request.resource.data.tipoMaquinaria in [
-          'retroexcavadoras',
-          'compactacion',
-          'motoniveladoras',
-          'cargadoras',
-          'minicargadoras',
-          'topadoras',
-          'miniexcavadoras',
-          'otros'
-        ]
+        && request.resource.data.precioConsultar is bool
+        && (request.resource.data.tipoMaquinaria == null
+          || request.resource.data.tipoMaquinaria in [
+            'retroexcavadoras',
+            'compactacion',
+            'motoniveladoras',
+            'cargadoras',
+            'minicargadoras',
+            'topadoras',
+            'miniexcavadoras',
+            'otros'
+          ])
         && request.resource.data.condicion in ['nuevo', 'usado']
         && request.resource.data.moneda in ['pesos', 'dolar']
         && request.resource.data.marca.size() <= 200
         && request.resource.data.modelo.size() <= 200
         && request.resource.data.email.size() <= 320
         && request.resource.data.celular.size() <= 40
-        && request.resource.data.ubicacion.size() <= 300;
+        && request.resource.data.ubicacion.size() <= 300
+        && request.resource.data.imagenesUrls is list
+        && request.resource.data.imagenesUrls.size() <= 40
+        && (request.resource.data.horas == null || request.resource.data.horas is number)
+        && (request.resource.data.ano == null || request.resource.data.ano is number)
+        && (request.resource.data.pesoTotalKg == null || request.resource.data.pesoTotalKg is number)
+        && (request.resource.data.capacidadBaldeM3 == null || request.resource.data.capacidadBaldeM3 is number)
+        && (request.resource.data.titulo == null || request.resource.data.titulo is string)
+        && (request.resource.data.categoriaCatalogo == null || request.resource.data.categoriaCatalogo is string)
+        && (request.resource.data.sku == null || request.resource.data.sku is string)
+        && (request.resource.data.tipoOtrosDescripcion == null || request.resource.data.tipoOtrosDescripcion is string)
+        && (request.resource.data.descripcionMaquina == null || request.resource.data.descripcionMaquina is string)
+        && (request.resource.data.mensajeAdicional == null || request.resource.data.mensajeAdicional is string)
+        && (request.resource.data.folletoUrl == null || request.resource.data.folletoUrl is string)
+        && (request.resource.data.folletoUrlIngresada == null || request.resource.data.folletoUrlIngresada is string)
+        && (request.resource.data.adjuntosUrls == null || request.resource.data.adjuntosUrls is list);
       allow read, update, delete: if false;
     }
 

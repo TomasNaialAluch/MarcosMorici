@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Loader from "@/components/Loader";
+import HomeOnlyLoader from "@/components/HomeOnlyLoader";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AccountProviders from "@/components/account/providers/AccountProviders";
@@ -25,7 +25,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={`${inter.variable} antialiased`}>
         <AccountProviders>
-          <Loader />
+          <HomeOnlyLoader />
           <Header />
           <main className="min-h-screen">
             {children}

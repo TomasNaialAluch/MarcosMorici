@@ -55,7 +55,43 @@ export function equipoFromDoc(id: string, data: DocumentData): Equipo {
       ? data.precio
       : typeof data.precioUsd === 'number'
         ? data.precioUsd
-        : undefined;
+        : typeof data.precio === 'string'
+          ? (() => {
+              const t = data.precio.trim().replace(/\./g, '').replace(',', '.');
+              if (t === '' || t.toLowerCase() === 'consultar') return undefined;
+              const n = Number(t);
+              return Number.isFinite(n) ? n : undefined;
+            })()
+          : undefined;
+
+  const monedaRaw = data.moneda;
+  const moneda =
+    monedaRaw === 'pesos' || monedaRaw === 'dolar'
+      ? monedaRaw
+      : typeof monedaRaw === 'string' && monedaRaw.toLowerCase() === 'usd'
+        ? 'dolar'
+        : typeof monedaRaw === 'string' && (monedaRaw.toLowerCase() === 'ars' || monedaRaw.toLowerCase() === '$')
+          ? 'pesos'
+          : undefined;
+
+  const condicionRaw = data.condicion;
+  const condicion =
+    condicionRaw === 'nuevo' || condicionRaw === 'usado' ? condicionRaw : undefined;
+
+  const tipoMaquinariaRaw = data.tipoMaquinaria;
+  const tipoMaquinaria =
+    typeof tipoMaquinariaRaw === 'string' && tipoMaquinariaRaw.trim() ? tipoMaquinariaRaw.trim() : undefined;
+
+  const tipoOtrosRaw = data.tipoOtrosDescripcion;
+  const tipoOtrosDescripcion =
+    typeof tipoOtrosRaw === 'string' && tipoOtrosRaw.trim() ? tipoOtrosRaw.trim() : undefined;
+
+  const skuRaw = data.sku ?? data.codigo ?? data.codigoInterno ?? data.referencia ?? data.referenciaInterna;
+  const sku = typeof skuRaw === 'string' && skuRaw.trim() ? skuRaw.trim() : undefined;
+
+  const dDesc = typeof data.descripcion === 'string' ? data.descripcion : '';
+  const dMaq = typeof data.descripcionMaquina === 'string' ? data.descripcionMaquina : '';
+  const descRaw = dDesc.trim() || dMaq.trim() || '';
 
   const ano =
     typeof data.ano === 'number'
@@ -72,8 +108,10 @@ export function equipoFromDoc(id: string, data: DocumentData): Equipo {
     ano,
     horas: typeof data.horas === 'number' ? data.horas : undefined,
     precio: precioNum,
-    precioConsultar: Boolean(data.precioConsultar),
-    descripcion: typeof data.descripcion === 'string' ? data.descripcion : undefined,
+    precioConsultar:
+      Boolean(data.precioConsultar) ||
+      (typeof data.precio === 'string' && data.precio.trim().toLowerCase() === 'consultar'),
+    descripcion: descRaw.trim() ? descRaw.trim() : undefined,
     imagenes,
     createdAt: toDate(data.createdAt),
     publicado: data.publicado !== false,
@@ -81,20 +119,34 @@ export function equipoFromDoc(id: string, data: DocumentData): Equipo {
     categoria:
       typeof data.categoria === 'string'
         ? data.categoria
-        : typeof data.tipoEquipo === 'string'
-          ? data.tipoEquipo
-          : undefined,
+        : typeof data.categoriaCatalogo === 'string'
+          ? data.categoriaCatalogo
+          : typeof data.tipoEquipo === 'string'
+            ? data.tipoEquipo
+            : undefined,
     destacado: Boolean(data.destacado),
     capacidadBaldeM3:
       typeof data.capacidadBaldeM3 === 'number' ? data.capacidadBaldeM3 : undefined,
     pesoTotalKg: typeof data.pesoTotalKg === 'number' ? data.pesoTotalKg : undefined,
+    moneda,
+    sku,
+    condicion,
+    tipoMaquinaria,
+    tipoOtrosDescripcion,
     folletoPdfUrl: pickPdfUrl(data),
     ownerId: typeof data.ownerId === 'string' && data.ownerId.trim() ? data.ownerId.trim() : undefined,
   };
 }
 
 function pickPdfUrl(data: DocumentData): string | undefined {
-  const keys = ['folletoPdfUrl', 'pdfUrl', 'documentoPdf', 'folletoUrl', 'fichaPdfUrl'] as const;
+  const keys = [
+    'folletoPdfUrl',
+    'pdfUrl',
+    'documentoPdf',
+    'folletoUrl',
+    'folletoUrlIngresada',
+    'fichaPdfUrl',
+  ] as const;
   for (const k of keys) {
     const v = data[k];
     if (typeof v === 'string' && v.trim().length > 0) return v.trim();

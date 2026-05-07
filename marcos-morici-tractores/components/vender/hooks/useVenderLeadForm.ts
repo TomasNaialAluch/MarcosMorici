@@ -3,11 +3,7 @@
 import { useCallback, useState } from 'react';
 import type { VenderFormErrors, VenderFormState } from '@/lib/types/venderLead';
 import { createInitialVenderFormState } from '@/lib/vender/initialState';
-import {
-  validateFullForm,
-  validateStepMachine,
-  validateVenderFiles,
-} from '@/lib/vender/validators';
+import { validateFullForm, validateVenderFiles } from '@/lib/vender/validators';
 import { persistVenderLead } from '@/lib/firebase/venderLeads';
 import { buildLeadWhatsappMessage } from '@/lib/vender/buildLeadWhatsappMessage';
 import { openWhatsApp } from '@/lib/utils/whatsapp';
@@ -55,12 +51,9 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
   const goNext = useCallback(() => {
     setBannerError(null);
     setStorageWarning(null);
-    const e = validateStepMachine(state);
-    setErrors(e);
-    if (Object.keys(e).length > 0) return;
-    setState((s) => ({ ...s, step: 1 }));
     setErrors({});
-  }, [state]);
+    setState((s) => ({ ...s, step: 1 }));
+  }, []);
 
   const goBack = useCallback(() => {
     setState((s) => ({ ...s, step: 0 }));
@@ -85,10 +78,7 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
     const e = validateFullForm(state);
     if (Object.keys(e).length > 0) {
       setErrors(e);
-      const machineErr = validateStepMachine(state);
-      if (Object.keys(machineErr).length > 0) {
-        setState((s) => ({ ...s, step: 0 }));
-      }
+      setState((s) => ({ ...s, step: 1 }));
       return;
     }
     setErrors({});

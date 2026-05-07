@@ -8,21 +8,18 @@ export interface MachineFieldVisibility {
 }
 
 /**
- * Reglas condicionales README §7 / Vialmaq Amasty.
- * - Otros → texto tipo libre.
- * - Usado → horas obligatorias.
- * - Retroexcavadoras | Miniexcavadoras → peso total.
- * - Cargadoras → capacidad de balde.
+ * Visibilidad de campos en «Vender». Todo es opcional; mostramos siempre horas, peso y balde
+ * para poder cargar la ficha completa sin reglas rígidas. Solo «Otros» despliega texto libre.
  */
 export function getMachineFieldVisibility(params: {
   tipoMaquinaria: TipoMaquinaria;
   condicion: CondicionMaquina;
 }): MachineFieldVisibility {
-  const { tipoMaquinaria, condicion } = params;
+  const { tipoMaquinaria } = params;
   return {
     tipoOtros: tipoMaquinaria === 'otros',
-    horas: condicion === 'usado',
-    pesoTotalKg: tipoMaquinaria === 'retroexcavadoras' || tipoMaquinaria === 'miniexcavadoras',
-    capacidadBaldeM3: tipoMaquinaria === 'cargadoras',
+    horas: true,
+    pesoTotalKg: true,
+    capacidadBaldeM3: true,
   };
 }

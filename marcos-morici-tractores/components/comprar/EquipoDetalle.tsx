@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import Breadcrumb from '@/components/Breadcrumb';
 import type { Equipo } from '@/lib/types/equipo';
-import { formatUsd } from '@/lib/catalog/catalogUtils';
+import { formatPrecioLista } from '@/lib/catalog/catalogUtils';
 import EquipoDetalleGaleria from '@/components/comprar/EquipoDetalleGaleria';
 import EquipoDetallePdf from '@/components/comprar/EquipoDetallePdf';
 import EquipoDetalleContactoPanel from '@/components/comprar/EquipoDetalleContactoPanel';
+import { TIPO_MAQUINARIA_OPTIONS } from '@/lib/vender/constants';
+import { getWhatsAppUrl, getEquipmentMessage } from '@/lib/utils/whatsapp';
 
 interface EquipoDetalleProps {
   equipo: Equipo;
@@ -14,8 +16,66 @@ interface EquipoDetalleProps {
   canonicalPath: string;
 }
 
+function labelTipoMaquinaria(value: string): string {
+  const o = TIPO_MAQUINARIA_OPTIONS.find((x) => x.value === value);
+  return o?.label ?? value;
+}
+
+function labelMoneda(m: Equipo['moneda']): string | null {
+  if (!m) return null;
+  return m === 'pesos' ? 'Peso argentino' : 'Dólar estadounidense';
+}
+
 export default function EquipoDetalle({ equipo, canonicalPath }: EquipoDetalleProps) {
   const titulo = (equipo.titulo || `${equipo.marca} ${equipo.modelo}`).trim();
+  const waMsg = `${getEquipmentMessage(titulo)} — Ref: ${equipo.slug}`;
+  const waHref = getWhatsAppUrl(waMsg);
+
+  const specRows: { label: string; value: string }[] = [];
+
+  if (equipo.sku?.trim()) specRows.push({ label: 'SKU / código', value: equipo.sku.trim() });
+  if (equipo.categoria?.trim()) specRows.push({ label: 'Categoría', value: equipo.categoria.trim() });
+  if (equipo.tipoMaquinaria?.trim()) {
+    specRows.push({
+      label: 'Tipo de maquinaria',
+      value: labelTipoMaquinaria(equipo.tipoMaquinaria.trim()),
+    });
+  }
+  if (equipo.tipoMaquinaria === 'otros' && equipo.tipoOtrosDescripcion?.trim()) {
+    specRows.push({ label: 'Detalle del tipo', value: equipo.tipoOtrosDescripcion.trim() });
+  }
+  if (equipo.condicion) {
+    specRows.push({ label: 'Condición', value: equipo.condicion === 'nuevo' ? 'Nuevo' : 'Usado' });
+  }
+  specRows.push({ label: 'Marca', value: equipo.marca });
+  specRows.push({ label: 'Modelo', value: equipo.modelo });
+  if (equipo.ano != null) specRows.push({ label: 'Año de fabricación', value: String(equipo.ano) });
+  if (equipo.horas != null) {
+    specRows.push({ label: 'Horas de uso', value: `${equipo.horas.toLocaleString('es-AR')} hs.` });
+  }
+  const monedaLabel = labelMoneda(equipo.moneda);
+  if (monedaLabel && !equipo.precioConsultar && equipo.precio != null) {
+    specRows.push({ label: 'Moneda del precio', value: monedaLabel });
+  }
+  specRows.push({ label: 'Precio', value: formatPrecioLista(equipo) });
+  if (equipo.pesoTotalKg != null) {
+    specRows.push({
+      label: 'Peso total (kg)',
+      value: equipo.pesoTotalKg.toLocaleString('es-AR'),
+    });
+  }
+  if (equipo.capacidadBaldeM3 != null) {
+    specRows.push({
+      label: 'Capacidad de balde (m³)',
+      value: String(equipo.capacidadBaldeM3).replace('.', ','),
+    });
+  }
+  if (equipo.createdAt) {
+    specRows.push({
+      label: 'Publicado',
+      value: equipo.createdAt.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }),
+    });
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -27,78 +87,59 @@ export default function EquipoDetalle({ equipo, canonicalPath }: EquipoDetallePr
         ]}
       />
 
-      <div className="container mx-auto px-4 py-8 md:py-12">
-        <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl md:text-4xl font-bold text-[#1E3A5F] uppercase leading-tight">{titulo}</h1>
-            {equipo.categoria && (
-              <p className="mt-2 text-sm font-medium text-[#5A6C7D] uppercase tracking-wide">{equipo.categoria}</p>
-            )}
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-xs font-bold uppercase px-3 py-1.5 rounded-full border-2 border-[#4A7C59] text-[#4A7C59]">
-              Venta
-            </span>
-            {equipo.destacado && (
-              <span className="text-xs font-bold uppercase px-3 py-1.5 rounded-full bg-[#D9773F] text-white">Destacado</span>
-            )}
-          </div>
-        </div>
-
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-12">
+      <div className="container mx-auto px-4 py-8 md:py-12 max-w-6xl">
+        <div className="grid gap-10 lg:grid-cols-2 lg:gap-12 lg:items-start">
           <EquipoDetalleGaleria titulo={titulo} imagenes={equipo.imagenes} />
 
-          <div className="space-y-6">
-            <p className="text-3xl md:text-4xl font-bold text-[#1E3A5F]">
-              {equipo.precioConsultar || equipo.precio == null ? 'Consultar valor' : formatUsd(equipo.precio)}
-            </p>
+          <div className="space-y-6 min-w-0">
+            <header className="space-y-3">
+              <h1 className="text-2xl md:text-5xl font-bold text-[#1E3A5F] uppercase leading-tight">{titulo}</h1>
+              <p className="text-2xl md:text-4xl font-semibold text-[#1E3A5F]">{formatPrecioLista(equipo)}</p>
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-full sm:w-auto justify-center px-10 py-3.5 rounded bg-[#6B7280] text-white text-sm font-bold uppercase tracking-wide hover:bg-[#4B5563] transition-colors"
+              >
+                Consultar
+              </a>
+            </header>
 
-            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm border-t border-[#E0E5E9] pt-6">
-              <Spec label="Marca" value={equipo.marca} />
-              <Spec label="Modelo" value={equipo.modelo} />
-              {equipo.ano != null && <Spec label="Año" value={String(equipo.ano)} />}
-              {equipo.horas != null && (
-                <Spec label="Horas de uso" value={`${equipo.horas.toLocaleString('es-AR')} hs.`} />
-              )}
-              {equipo.capacidadBaldeM3 != null && (
-                <Spec label="Capacidad de balde" value={`${equipo.capacidadBaldeM3} m³`} />
-              )}
-              {equipo.pesoTotalKg != null && (
-                <Spec label="Peso total" value={`${equipo.pesoTotalKg.toLocaleString('es-AR')} kg`} />
-              )}
-              {equipo.createdAt && (
-                <Spec
-                  label="Publicado"
-                  value={equipo.createdAt.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                />
-              )}
-            </dl>
+            {equipo.descripcion?.trim() ? (
+              <section aria-label="Descripción del equipo">
+                <div className="text-sm md:text-base text-[#5A6C7D] whitespace-pre-wrap leading-relaxed">
+                  {equipo.descripcion.trim()}
+                </div>
+              </section>
+            ) : null}
 
-            <Link
-              href="/comprar"
-              className="inline-flex text-sm font-semibold text-[#1E3A5F] hover:text-[#D9773F] underline"
-            >
+            {equipo.folletoPdfUrl ? <EquipoDetallePdf url={equipo.folletoPdfUrl} titulo={titulo} variant="compact" /> : null}
+
+            <section aria-label="Características técnicas">
+              <div className="rounded-lg border border-[#E0E5E9] overflow-hidden">
+                <table className="w-full text-sm">
+                  <tbody>
+                    {specRows.map((row) => (
+                      <tr key={row.label} className="border-b border-[#E0E5E9] last:border-b-0 bg-white">
+                        <th
+                          scope="row"
+                          className="text-left font-bold text-[#1E3A5F] py-3 px-4 align-top w-[45%] sm:w-[40%] bg-[#F8FAFB]/90"
+                        >
+                          {row.label}
+                        </th>
+                        <td className="text-[#5A6C7D] py-3 px-4 align-top">{row.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <Link href="/comprar" className="inline-flex text-sm font-semibold text-[#1E3A5F] hover:text-[#D9773F] underline">
               ← Volver al catálogo
             </Link>
           </div>
         </div>
-
-        {equipo.descripcion ? (
-          <section className="mt-12 max-w-4xl" aria-labelledby="desc-equipo">
-            <h2 id="desc-equipo" className="text-lg font-bold text-[#1E3A5F] uppercase mb-3">
-              Descripción
-            </h2>
-            <div className="text-sm md:text-base max-w-none text-[#5A6C7D] whitespace-pre-wrap leading-relaxed">
-              {equipo.descripcion}
-            </div>
-          </section>
-        ) : null}
-
-        {equipo.folletoPdfUrl ? (
-          <div className="mt-12 max-w-5xl">
-            <EquipoDetallePdf url={equipo.folletoPdfUrl} titulo={titulo} />
-          </div>
-        ) : null}
 
         <div className="mt-12 max-w-5xl">
           <EquipoDetalleContactoPanel equipo={equipo} />
@@ -106,6 +147,12 @@ export default function EquipoDetalle({ equipo, canonicalPath }: EquipoDetallePr
 
         <p className="mt-10 text-xs text-[#5A6C7D]">
           Referencia interna: <span className="font-mono">{equipo.slug}</span>
+          {equipo.sku?.trim() ? (
+            <>
+              {' '}
+              · SKU: <span className="font-mono">{equipo.sku.trim()}</span>
+            </>
+          ) : null}
           {canonicalPath ? (
             <>
               {' '}
@@ -117,15 +164,6 @@ export default function EquipoDetalle({ equipo, canonicalPath }: EquipoDetallePr
           ) : null}
         </p>
       </div>
-    </div>
-  );
-}
-
-function Spec({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border-b border-[#E0E5E9]/80 pb-3 sm:border-0 sm:pb-0">
-      <dt className="text-[#5A6C7D] font-medium">{label}</dt>
-      <dd className="text-[#1E3A5F] font-semibold mt-0.5">{value}</dd>
     </div>
   );
 }
