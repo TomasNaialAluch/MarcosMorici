@@ -1,8 +1,11 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { VenderFormState } from '@/lib/types/venderLead';
 import { computeVenderFormProgress } from '@/lib/vender/formProgress';
+
+const HOVER_HINT_MS = 2000;
+const HINT_AUTO_HIDE_MS = 8000;
 
 interface VenderFormProgressProps {
   state: VenderFormState;
@@ -10,11 +13,53 @@ interface VenderFormProgressProps {
 
 export default function VenderFormProgress({ state }: VenderFormProgressProps) {
   const { groups, percent } = useMemo(() => computeVenderFormProgress(state), [state]);
+  const [hintVisible, setHintVisible] = useState(false);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearHoverTimer = useCallback(() => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+  }, []);
+
+  const showHint = useCallback(() => {
+    setHintVisible(true);
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = setTimeout(() => {
+      hideTimerRef.current = null;
+      setHintVisible(false);
+    }, HINT_AUTO_HIDE_MS);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      clearHoverTimer();
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    };
+  }, [clearHoverTimer]);
+
+  const handleMouseEnter = () => {
+    clearHoverTimer();
+    hoverTimerRef.current = setTimeout(() => {
+      hoverTimerRef.current = null;
+      showHint();
+    }, HOVER_HINT_MS);
+  };
+
+  const handleMouseLeave = () => {
+    clearHoverTimer();
+  };
 
   return (
-    <div
-      className="rounded-xl border border-[#E0E5E9] bg-[#F8FAFB] px-4 py-4 sm:px-5 sm:py-4 mb-6"
-      aria-label="Progreso del formulario"
+    <button
+      type="button"
+      className="rounded-xl border border-[#E0E5E9] bg-[#F8FAFB] px-4 py-4 sm:px-5 sm:py-4 mb-6 w-full text-left cursor-pointer touch-manipulation transition-colors hover:bg-[#F2F5F7] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4A7C59]/45 focus-visible:ring-offset-2"
+      aria-label="Progreso del formulario. Tocá o mantené el puntero dos segundos para recordar dónde cargar los datos."
+      onClick={showHint}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <p className="text-sm font-semibold text-[#1E3A5F]">Completitud del aviso</p>
@@ -61,9 +106,18 @@ export default function VenderFormProgress({ state }: VenderFormProgressProps) {
           );
         })}
       </ul>
+      {hintVisible ? (
+        <p
+          className="mt-3 rounded-lg border border-[#4A7C59]/35 bg-white px-3 py-2 text-xs font-medium text-[#1E3A5F] leading-snug shadow-sm"
+          role="status"
+          aria-live="polite"
+        >
+          Los datos del aviso se completan más abajo, en el formulario de esta página.
+        </p>
+      ) : null}
       <p className="mt-3 text-[11px] text-[#8A9BA8] leading-snug">
         Ningún campo es obligatorio. El porcentaje solo refleja cuánta información ya cargaste para la ficha del equipo.
       </p>
-    </div>
+    </button>
   );
 }

@@ -5,8 +5,14 @@ import type { VenderFormErrors, VenderFormState } from '@/lib/types/venderLead';
 import { createInitialVenderFormState } from '@/lib/vender/initialState';
 import { validateFullForm, validateVenderFiles } from '@/lib/vender/validators';
 import { persistVenderLead } from '@/lib/firebase/venderLeads';
+import { markSolicitudPublished } from '@/lib/firebase/venderSolicitudes';
 import { buildLeadWhatsappMessage } from '@/lib/vender/buildLeadWhatsappMessage';
 import { openWhatsApp } from '@/lib/utils/whatsapp';
+
+export interface UseVenderLeadFormOptions {
+  /** Si venís desde el panel de solicitudes, al guardar el lead se marca la solicitud como publicada. */
+  linkedSolicitudId?: string | null;
+}
 
 export interface UseVenderLeadFormReturn {
   state: VenderFormState;
@@ -25,9 +31,11 @@ export interface UseVenderLeadFormReturn {
   submit: () => Promise<void>;
   openLeadWhatsApp: () => void;
   reset: () => void;
+  mergeFromPartial: (partial: Partial<VenderFormState>) => void;
 }
 
-export function useVenderLeadForm(): UseVenderLeadFormReturn {
+export function useVenderLeadForm(options?: UseVenderLeadFormOptions): UseVenderLeadFormReturn {
+  const linkedSolicitudId = options?.linkedSolicitudId ?? null;
   const [state, setState] = useState<VenderFormState>(createInitialVenderFormState);
   const [errors, setErrors] = useState<VenderFormErrors>({});
   const [bannerError, setBannerError] = useState<string | null>(null);
@@ -90,6 +98,14 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
         setLastLeadId(result.leadId ?? null);
         setBannerError(null);
         setStorageWarning(result.storageWarning ?? null);
+        if (linkedSolicitudId && result.leadId) {
+          const marked = await markSolicitudPublished(linkedSolicitudId, result.leadId);
+          if (!marked.ok && marked.error) {
+            setStorageWarning((prev) =>
+              [prev, ` La solicitud no se pudo marcar como publicada: ${marked.error}`].filter(Boolean).join('')
+            );
+          }
+        }
       } else {
         setSubmitSuccess(false);
         setLastLeadId(null);
@@ -102,7 +118,7 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
     } finally {
       setSubmitting(false);
     }
-  }, [state]);
+  }, [state, linkedSolicitudId]);
 
   const reset = useCallback(() => {
     setState(createInitialVenderFormState());
@@ -111,6 +127,10 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
     setStorageWarning(null);
     setSubmitSuccess(false);
     setLastLeadId(null);
+  }, []);
+
+  const mergeFromPartial = useCallback((partial: Partial<VenderFormState>) => {
+    setState((s) => ({ ...s, ...partial }));
   }, []);
 
   return {
@@ -129,5 +149,6 @@ export function useVenderLeadForm(): UseVenderLeadFormReturn {
     submit,
     openLeadWhatsApp,
     reset,
+    mergeFromPartial,
   };
 }

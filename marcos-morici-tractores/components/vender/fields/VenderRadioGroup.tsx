@@ -23,12 +23,12 @@ export default function VenderRadioGroup<T extends string>({
   required,
 }: VenderRadioGroupProps<T>) {
   return (
-    <fieldset className="min-w-0 border-0 p-0 m-0">
+    <fieldset className="min-w-0 border-0 m-0 px-0 pt-0 pb-8">
       <legend className="block text-[13px] font-medium text-[#1E3A5F] mb-2">
         {label}
         {required ? <span className="text-[#D9773F]"> *</span> : null}
       </legend>
-      <div className="flex flex-wrap gap-3" role="radiogroup" aria-label={label}>
+      <div className="flex flex-wrap gap-4 sm:gap-5" role="radiogroup" aria-label={label}>
         {options.map((o) => {
           const id = `${name}-${o.value}`;
           const checked = value === o.value;

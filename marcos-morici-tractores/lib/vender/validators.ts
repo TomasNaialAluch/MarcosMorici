@@ -1,4 +1,5 @@
 import type { VenderFormState, VenderFormErrors } from '@/lib/types/venderLead';
+import type { VenderSimpleFormState, VenderSimpleFormErrors } from '@/lib/types/venderSolicitud';
 import { VENDER_FILE_EXTENSIONS } from '@/lib/vender/constants';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,4 +34,22 @@ export function validateStepContact(state: VenderFormState): VenderFormErrors {
 
 export function validateFullForm(state: VenderFormState): VenderFormErrors {
   return validateStepContact(state);
+}
+
+/** Validación del formulario corto (usuarios no admin). */
+export function validateSimpleSolicitud(state: VenderSimpleFormState): VenderSimpleFormErrors {
+  const errors: VenderSimpleFormErrors = {};
+  if (!state.marca.trim()) errors.marca = 'Indicá la marca.';
+  if (!state.modelo.trim()) errors.modelo = 'Indicá el modelo.';
+  if (!state.descripcion.trim()) errors.descripcion = 'Agregá una descripción.';
+  if (state.imagenes.length < 1) errors.imagenes = 'Subí al menos una foto.';
+  if (!state.precioConsultar && !state.precio.trim()) {
+    errors.precio = 'Indicá el precio o marcá «Precio a consultar».';
+  }
+  if (!state.celular.trim()) errors.celular = 'Indicá un número de celular para contactarte.';
+  const em = state.email.trim();
+  if (em && !EMAIL_RE.test(em)) {
+    errors.email = 'Correo inválido.';
+  }
+  return errors;
 }

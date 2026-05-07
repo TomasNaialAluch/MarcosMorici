@@ -7,6 +7,7 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { formatAuthError } from '@/lib/firebase/authFormatError';
 import { getClientAuth, isFirebaseWebAppReady } from '@/lib/firebase/config';
 import SocialAuthButtons from '@/components/account/auth/SocialAuthButtons';
+import PasswordInput from '@/components/account/auth/PasswordInput';
 
 const inputClass =
   'w-full rounded-lg border border-[#E0E5E9] px-3 py-2.5 text-sm text-[#1E3A5F] placeholder:text-[#5A6C7D] focus:border-[#4A7C59] focus:outline-none focus:ring-1 focus:ring-[#4A7C59]';
@@ -103,28 +104,26 @@ export default function RegisterForm() {
           <label htmlFor="reg-password" className="mb-1 block text-sm font-medium text-[#5A6C7D]">
             Contraseña
           </label>
-          <input
+          <PasswordInput
             id="reg-password"
-            type="password"
             autoComplete="new-password"
             required
-            className={inputClass}
+            inputClassName={inputClass}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={setPassword}
           />
         </div>
         <div>
           <label htmlFor="reg-confirm" className="mb-1 block text-sm font-medium text-[#5A6C7D]">
             Repetir contraseña
           </label>
-          <input
+          <PasswordInput
             id="reg-confirm"
-            type="password"
             autoComplete="new-password"
             required
-            className={inputClass}
+            inputClassName={inputClass}
             value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
+            onChange={setConfirm}
           />
         </div>
         <button type="submit" className={btnPrimary} disabled={pending}>

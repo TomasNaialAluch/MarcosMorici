@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/components/account/providers/AuthProvider';
 
 const tab = (href: string, label: string, pathname: string) => {
   const active =
@@ -24,12 +25,14 @@ const tab = (href: string, label: string, pathname: string) => {
 
 export default function CuentaTabs() {
   const pathname = usePathname() ?? '';
+  const { isAdmin } = useAuth();
 
   return (
     <nav className="mb-8 flex flex-wrap gap-2 border-b border-[#E0E5E9] pb-4" aria-label="Secciones de cuenta">
       {tab('/cuenta/perfil', 'Perfil', pathname)}
       {tab('/cuenta/publicaciones', 'Publicaciones', pathname)}
       {tab('/cuenta/mensajes', 'Mensajes', pathname)}
+      {isAdmin ? tab('/cuenta/solicitudes-vender', 'Solicitudes vender', pathname) : null}
     </nav>
   );
 }

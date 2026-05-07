@@ -7,6 +7,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { formatAuthError } from '@/lib/firebase/authFormatError';
 import { getClientAuth, isFirebaseWebAppReady } from '@/lib/firebase/config';
 import SocialAuthButtons from '@/components/account/auth/SocialAuthButtons';
+import PasswordInput from '@/components/account/auth/PasswordInput';
 
 const inputClass =
   'w-full rounded-lg border border-[#E0E5E9] px-3 py-2.5 text-sm text-[#1E3A5F] placeholder:text-[#5A6C7D] focus:border-[#4A7C59] focus:outline-none focus:ring-1 focus:ring-[#4A7C59]';
@@ -76,14 +77,13 @@ export default function LoginForm() {
           <label htmlFor="login-password" className="mb-1 block text-sm font-medium text-[#5A6C7D]">
             Contraseña
           </label>
-          <input
+          <PasswordInput
             id="login-password"
-            type="password"
             autoComplete="current-password"
             required
-            className={inputClass}
+            inputClassName={inputClass}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={setPassword}
           />
         </div>
         <button type="submit" className={btnPrimary} disabled={pending}>

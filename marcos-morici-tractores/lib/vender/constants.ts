@@ -45,3 +45,6 @@ export const VENDER_FILE_EXTENSIONS = [
 export const VENDER_FILE_ACCEPT = VENDER_FILE_EXTENSIONS.map((e) => `.${e}`).join(',');
 
 export const VENDER_LEADS_COLLECTION = 'venderLeads';
+
+/** Borradores desde el formulario simple (usuarios no admin); el admin publica con el formulario completo. */
+export const VENDER_SOLICITUDES_COLLECTION = 'venderSolicitudes';
