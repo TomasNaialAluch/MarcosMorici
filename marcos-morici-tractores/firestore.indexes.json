@@ -1,0 +1,22 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "equipoPreguntas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "equipoId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "equipoPreguntas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "equipoId", "order": "ASCENDING" },
+        { "fieldPath": "visible", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

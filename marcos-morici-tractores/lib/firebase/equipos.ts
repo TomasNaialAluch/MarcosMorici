@@ -1,5 +1,7 @@
 import {
   collection,
+  doc,
+  getDoc,
   getDocs,
   query,
   where,
@@ -18,6 +20,14 @@ function toDate(value: unknown): Date | null {
   }
   if (value instanceof Date) return value;
   return null;
+}
+
+/** Lectura por id (p. ej. panel admin); requiere reglas que permitan lectura a admin en borradores. */
+export async function fetchEquipoById(equipoId: string): Promise<Equipo | null> {
+  if (!db) return null;
+  const snap = await getDoc(doc(db, COLLECTION, equipoId));
+  if (!snap.exists()) return null;
+  return equipoFromDoc(snap.id, snap.data());
 }
 
 function slugify(part: string): string {
@@ -172,6 +182,17 @@ export async function fetchEquiposPublicados(): Promise<Equipo[]> {
     const e = equipoFromDoc(docSnap.id, docSnap.data());
     if (e.publicado !== false) list.push(e);
   });
+  return list;
+}
+
+/** Listado amplio para panel admin (todas las fichas; requiere `isAdmin()` en reglas). */
+export async function fetchTodosEquiposAdmin(maxResults = 500): Promise<Equipo[]> {
+  if (!db) return [];
+  const ref = collection(db, COLLECTION);
+  const snap = await getDocs(query(ref, limit(maxResults)));
+  const list: Equipo[] = [];
+  snap.forEach((docSnap) => list.push(equipoFromDoc(docSnap.id, docSnap.data())));
+  list.sort((a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0));
   return list;
 }
 

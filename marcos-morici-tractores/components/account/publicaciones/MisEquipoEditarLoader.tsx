@@ -5,11 +5,12 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/account/providers/AuthProvider';
 import type { Equipo } from '@/lib/types/equipo';
 import { CUENTA_EQUIPO_EDIT_PLACEHOLDER } from '@/lib/cuenta/staticExportPlaceholders';
+import { fetchEquipoById } from '@/lib/firebase/equipos';
 import { fetchMisEquipoById } from '@/lib/firebase/misEquipos';
 import MisEquipoForm from '@/components/account/publicaciones/MisEquipoForm';
 
 export default function MisEquipoEditarLoader({ equipoId }: { equipoId: string }) {
-  const { firebaseUser } = useAuth();
+  const { firebaseUser, isAdmin } = useAuth();
   const [equipo, setEquipo] = useState<Equipo | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,7 +23,9 @@ export default function MisEquipoEditarLoader({ equipoId }: { equipoId: string }
     let cancelled = false;
     (async () => {
       try {
-        const e = await fetchMisEquipoById(equipoId, firebaseUser.uid);
+        const e = isAdmin
+          ? await fetchEquipoById(equipoId)
+          : await fetchMisEquipoById(equipoId, firebaseUser.uid);
         if (!cancelled) setEquipo(e);
       } catch (err) {
         if (!cancelled) {
@@ -34,7 +37,7 @@ export default function MisEquipoEditarLoader({ equipoId }: { equipoId: string }
     return () => {
       cancelled = true;
     };
-  }, [equipoId, firebaseUser?.uid]);
+  }, [equipoId, firebaseUser?.uid, isAdmin]);
 
   if (equipoId === CUENTA_EQUIPO_EDIT_PLACEHOLDER) {
     return (
@@ -62,10 +65,12 @@ export default function MisEquipoEditarLoader({ equipoId }: { equipoId: string }
     );
   }
 
+  const ownerUid = equipo.ownerId?.trim() || firebaseUser.uid;
+
   return (
     <div className="max-w-xl space-y-6">
       <h1 className="text-xl font-bold text-[#1E3A5F]">Editar publicación</h1>
-      <MisEquipoForm mode="edit" ownerUid={firebaseUser.uid} equipoId={equipo.id} initial={equipo} />
+      <MisEquipoForm mode="edit" ownerUid={ownerUid} equipoId={equipo.id} initial={equipo} />
     </div>
   );
 }

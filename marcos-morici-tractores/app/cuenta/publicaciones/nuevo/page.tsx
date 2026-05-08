@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/components/account/providers/AuthProvider';
+import RequireAdmin from '@/components/account/cuenta/RequireAdmin';
 import MisEquipoForm from '@/components/account/publicaciones/MisEquipoForm';
 
-export default function NuevaPublicacionPage() {
+function NuevaPublicacionInner() {
   const { firebaseUser } = useAuth();
   if (!firebaseUser) return null;
 
@@ -21,5 +22,13 @@ export default function NuevaPublicacionPage() {
       </div>
       <MisEquipoForm mode="create" ownerUid={firebaseUser.uid} />
     </div>
+  );
+}
+
+export default function NuevaPublicacionPage() {
+  return (
+    <RequireAdmin>
+      <NuevaPublicacionInner />
+    </RequireAdmin>
   );
 }

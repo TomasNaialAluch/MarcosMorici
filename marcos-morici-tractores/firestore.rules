@@ -13,7 +13,8 @@ service cloud.firestore {
       allow read: if (!resource.data.keys().hasAny(['publicado']) || resource.data.publicado != false)
         || (request.auth != null
           && resource.data.keys().hasAny(['ownerId'])
-          && resource.data.ownerId == request.auth.uid);
+          && resource.data.ownerId == request.auth.uid)
+        || isAdmin();
 
       allow create: if request.auth != null
         && request.resource.data.ownerId == request.auth.uid
@@ -41,21 +42,23 @@ service cloud.firestore {
         && request.resource.data.modelo.size() >= 1
         && request.resource.data.modelo.size() <= 200;
 
-      allow update: if request.auth != null
-        && resource.data.keys().hasAny(['ownerId'])
-        && resource.data.ownerId == request.auth.uid
-        && request.resource.data.ownerId == resource.data.ownerId
-        && request.resource.data.destacado == resource.data.destacado
-        && request.resource.data.marca is string
-        && request.resource.data.modelo is string
-        && request.resource.data.slug is string
-        && request.resource.data.imagenes is list
-        && request.resource.data.publicado is bool
-        && request.resource.data.updatedAt is timestamp;
+      allow update: if isAdmin()
+        || (request.auth != null
+          && resource.data.keys().hasAny(['ownerId'])
+          && resource.data.ownerId == request.auth.uid
+          && request.resource.data.ownerId == resource.data.ownerId
+          && request.resource.data.destacado == resource.data.destacado
+          && request.resource.data.marca is string
+          && request.resource.data.modelo is string
+          && request.resource.data.slug is string
+          && request.resource.data.imagenes is list
+          && request.resource.data.publicado is bool
+          && request.resource.data.updatedAt is timestamp);
 
-      allow delete: if request.auth != null
-        && resource.data.keys().hasAny(['ownerId'])
-        && resource.data.ownerId == request.auth.uid;
+      allow delete: if isAdmin()
+        || (request.auth != null
+          && resource.data.keys().hasAny(['ownerId'])
+          && resource.data.ownerId == request.auth.uid);
     }
 
     match /equipoContactos/{id} {
@@ -196,6 +199,43 @@ service cloud.firestore {
         && (resource.data.ownerId == request.auth.uid || isAdmin());
       allow update: if isAdmin();
       allow delete: if false;
+    }
+
+    match /equipoPreguntas/{pid} {
+      allow read: if resource.data.visible == true || isAdmin();
+      allow create: if request.resource.data.keys().hasOnly([
+          'equipoId',
+          'slug',
+          'nombre',
+          'telefono',
+          'texto',
+          'createdAt',
+          'visible',
+          'respuesta',
+          'respondidoEn',
+          'respondidoPorUid'
+        ])
+        && request.resource.data.equipoId is string
+        && request.resource.data.equipoId.size() >= 1
+        && request.resource.data.equipoId.size() <= 128
+        && request.resource.data.slug is string
+        && request.resource.data.slug.size() >= 1
+        && request.resource.data.slug.size() <= 256
+        && request.resource.data.nombre is string
+        && request.resource.data.nombre.size() >= 2
+        && request.resource.data.nombre.size() <= 120
+        && request.resource.data.texto is string
+        && request.resource.data.texto.size() >= 3
+        && request.resource.data.texto.size() <= 2000
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.visible == true
+        && (request.resource.data.telefono == null
+          || (request.resource.data.telefono is string && request.resource.data.telefono.size() <= 40))
+        && request.resource.data.respuesta == null
+        && request.resource.data.respondidoEn == null
+        && request.resource.data.respondidoPorUid == null;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     match /users/{userId} {

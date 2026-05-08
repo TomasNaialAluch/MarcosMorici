@@ -7,6 +7,7 @@ import { formatPrecioLista } from '@/lib/catalog/catalogUtils';
 import EquipoDetalleGaleria from '@/components/comprar/EquipoDetalleGaleria';
 import EquipoDetallePdf from '@/components/comprar/EquipoDetallePdf';
 import EquipoDetalleContactoPanel from '@/components/comprar/EquipoDetalleContactoPanel';
+import EquipoDetallePreguntas from '@/components/comprar/EquipoDetallePreguntas';
 import { TIPO_MAQUINARIA_OPTIONS } from '@/lib/vender/constants';
 import { getWhatsAppUrl, getEquipmentMessage } from '@/lib/utils/whatsapp';
 
@@ -88,61 +89,67 @@ export default function EquipoDetalle({ equipo, canonicalPath }: EquipoDetallePr
       />
 
       <div className="container mx-auto px-4 py-8 md:py-12 max-w-6xl">
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-12 lg:items-start">
-          <EquipoDetalleGaleria titulo={titulo} imagenes={equipo.imagenes} />
+        {/* Imagen a la izquierda; título, precio, consultar y descripción a la derecha */}
+        <div className="grid gap-8 md:grid-cols-2 md:gap-10 lg:gap-12 md:items-start">
+          <div className="min-w-0 md:pr-2">
+            <EquipoDetalleGaleria titulo={titulo} imagenes={equipo.imagenes} />
+          </div>
 
-          <div className="space-y-6 min-w-0">
+          <div className="min-w-0 flex flex-col gap-5 md:pl-2">
             <header className="space-y-3">
-              <h1 className="text-2xl md:text-5xl font-bold text-[#1E3A5F] uppercase leading-tight">{titulo}</h1>
-              <p className="text-2xl md:text-4xl font-semibold text-[#1E3A5F]">{formatPrecioLista(equipo)}</p>
+              <h1 className="text-2xl md:text-4xl xl:text-5xl font-bold text-[#1E3A5F] uppercase leading-tight">{titulo}</h1>
+              <p className="text-xl md:text-3xl xl:text-4xl font-semibold text-[#1E3A5F]">{formatPrecioLista(equipo)}</p>
               <a
                 href={waHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex w-full sm:w-auto justify-center px-10 py-3.5 rounded bg-[#6B7280] text-white text-sm font-bold uppercase tracking-wide hover:bg-[#4B5563] transition-colors"
               >
-                Consultar
+                Consultar precios
               </a>
             </header>
 
             {equipo.descripcion?.trim() ? (
-              <section aria-label="Descripción del equipo">
+              <section aria-label="Descripción del equipo" className="pt-1">
                 <div className="text-sm md:text-base text-[#5A6C7D] whitespace-pre-wrap leading-relaxed">
                   {equipo.descripcion.trim()}
                 </div>
               </section>
             ) : null}
-
-            {equipo.folletoPdfUrl ? <EquipoDetallePdf url={equipo.folletoPdfUrl} titulo={titulo} variant="compact" /> : null}
-
-            <section aria-label="Características técnicas">
-              <div className="rounded-lg border border-[#E0E5E9] overflow-hidden">
-                <table className="w-full text-sm">
-                  <tbody>
-                    {specRows.map((row) => (
-                      <tr key={row.label} className="border-b border-[#E0E5E9] last:border-b-0 bg-white">
-                        <th
-                          scope="row"
-                          className="text-left font-bold text-[#1E3A5F] py-3 px-4 align-top w-[45%] sm:w-[40%] bg-[#F8FAFB]/90"
-                        >
-                          {row.label}
-                        </th>
-                        <td className="text-[#5A6C7D] py-3 px-4 align-top">{row.value}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-
-            <Link href="/comprar" className="inline-flex text-sm font-semibold text-[#1E3A5F] hover:text-[#D9773F] underline">
-              ← Volver al catálogo
-            </Link>
           </div>
         </div>
 
-        <div className="mt-12 max-w-5xl">
+        <div className="mt-10 md:mt-12 space-y-6 max-w-5xl">
+          {equipo.folletoPdfUrl ? <EquipoDetallePdf url={equipo.folletoPdfUrl} titulo={titulo} variant="compact" /> : null}
+
+          <section aria-label="Características técnicas">
+            <div className="rounded-lg border border-[#E0E5E9] overflow-hidden">
+              <table className="w-full text-sm">
+                <tbody>
+                  {specRows.map((row) => (
+                    <tr key={row.label} className="border-b border-[#E0E5E9] last:border-b-0 bg-white">
+                      <th
+                        scope="row"
+                        className="text-left font-bold text-[#1E3A5F] py-3 px-4 align-top w-[45%] sm:w-[40%] bg-[#F8FAFB]/90"
+                      >
+                        {row.label}
+                      </th>
+                      <td className="text-[#5A6C7D] py-3 px-4 align-top">{row.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <Link href="/comprar" className="inline-flex text-sm font-semibold text-[#1E3A5F] hover:text-[#D9773F] underline">
+            ← Volver al catálogo
+          </Link>
+        </div>
+
+        <div className="mt-12 max-w-5xl space-y-10">
           <EquipoDetalleContactoPanel equipo={equipo} />
+          <EquipoDetallePreguntas equipo={equipo} />
         </div>
 
         <p className="mt-10 text-xs text-[#5A6C7D]">
